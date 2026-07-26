@@ -1,0 +1,7 @@
+# Full stack for local dev + LIVE runs (agent + DataHub + MCP).
+-r requirements.txt
+acryl-datahub[datahub-rest]>=1.0
+mcp>=1.0
+claude-agent-sdk>=0.1
+anthropic>=0.40
+Pillow>=10.0

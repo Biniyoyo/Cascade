@@ -1,0 +1,29 @@
+[
+  {
+    "id": "null_spike",
+    "name": "NULL spike (broken lookup)",
+    "failure_type": "Data quality \u2014 NOT NULL contract violation",
+    "priority": "HIGH",
+    "affected": "order_details",
+    "blast_total": 35,
+    "root_cause": "countries"
+  },
+  {
+    "id": "bad_aggregation",
+    "name": "Inflated totals (duplicated line items)",
+    "failure_type": "Correctness \u2014 metric inflation",
+    "priority": "CRITICAL",
+    "affected": "order_details",
+    "blast_total": 35,
+    "root_cause": "order_items"
+  },
+  {
+    "id": "pii_nulls",
+    "name": "Invalid PII (email nulls)",
+    "failure_type": "Data quality \u2014 PII completeness",
+    "priority": "HIGH",
+    "affected": "customers",
+    "blast_total": 36,
+    "root_cause": "CUSTOMERS"
+  }
+]
