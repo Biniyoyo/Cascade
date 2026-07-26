@@ -523,6 +523,6 @@
   ],
   "no_context": {
     "text": "**Most Likely Root Cause:**\nA recent ETL/ingestion logic change\u2014either a schema mapping error, a null-handling rule flip, or a failed upstream source join (e.g., a LEFT JOIN that should be INNER, or a data quality filter that's too aggressive). Less likely but possible: upstream source degradation or a permission/access issue causing the ingestion process to skip email population for new records.\n\n**Probable Downstream Impact:**\n- **Email/marketing platforms:** Campaign delivery lists will have gaps or fail validation, causing sends to be paused or bounce rates to spike.\n- **Customer analytics & segmentation:** Any dashboard or model filtering/grouping by email will show incomplete cohorts or strange NULL clusters.\n- **CRM/customer service tools:** Lookups and enrichment jobs depending on valid emails will degrade.\n- **Any downstream table** that does a join or filter on `cust_email` will inherit the NULLs or become sparse.\n\n**Immediate Actions:**\nCheck recent deployment/config changes to the `customers` ingestion pipeline, validate the upstream source data quality, and review the ETL logs for join failures or schema mismatches in the last 24\u201348 hours.",
-    "named_root_cause": true
+    "named_root_cause": false
   }
 }

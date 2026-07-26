@@ -178,7 +178,7 @@
        <b>root cause</b>, maps the <b>blast radius</b>, routes to the <b>owner</b>, and raises a
        <b>native incident</b> — autonomously. Not a chatbot. An agent that does real work.</p>
     <div class="kpis">
-      <div class="kpi"><div class="n" id="kScan">—</div><div class="l">assets in graph</div></div>
+      <div class="kpi"><div class="n" id="kScan">—</div><div class="l">graph assets · 1,049 entities</div></div>
       <div class="kpi"><div class="n" id="kBlast">—</div><div class="l">avg blast radius</div></div>
       <div class="kpi"><div class="n">1–2</div><div class="l">steps to root cause</div></div>
       <div class="kpi"><div class="n" id="kCost">~$0.13</div><div class="l">per investigation</div></div>
@@ -243,6 +243,7 @@ async function loadScenario(id){
     </div>
     ${d.no_context?`<div class="ab">
       <div class="ab-h">The proof: <span class="grad2">context, not model</span> — same LLM, with vs without DataHub</div>
+      <div class="ab-h" style="font-size:.85em;opacity:.75;margin-top:4px">Across all three scenarios: <b>0/3</b> root causes without DataHub vs <b>3/3</b> with — graded on the root-cause URN the agent annotates, not on wording.</div>
       <div class="ab-cols">
         <div class="ab-col no">
           <div class="ab-t">🔒 WITHOUT DataHub · symptom only</div>

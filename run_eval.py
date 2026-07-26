@@ -23,6 +23,9 @@ from cascade import datahub_incidents as di
 CACHE_DIR = Path(__file__).resolve().parent / "demo" / "cached"
 
 
+from cascade.grading import grade_root_cause, grade_no_context  # noqa: E402
+
+
 def _reset_incidents(urn: str):
     """Resolve any ACTIVE incidents on the target so each run starts clean."""
     try:
@@ -46,10 +49,9 @@ async def run_one(scenario: dict) -> dict:
     result = await run_incident(incident_prompt(scenario), max_budget_usd=2.5,
                                 model=FINAL_MODEL)
 
-    got = (result["final_text"] or "").lower()
-    passed = scenario["expected_root_cause"].lower() in got
-    # did the blind guess actually name the true root cause? (usually not)
-    guess_hit = scenario["expected_root_cause"].lower() in no_ctx["text"].lower()
+    passed = grade_root_cause(result["steps"], result["final_text"], scenario)
+    # did the blind guess actually name the true upstream asset? (it can't see the graph)
+    guess_hit = grade_no_context(no_ctx["text"], scenario)
     record = {
         "scenario": scenario,
         "final_text": result["final_text"],
