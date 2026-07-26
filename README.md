@@ -8,7 +8,7 @@
 
 > **CASCADE uses DataHub's Context Graph via the [MCP Server](https://github.com/acryldata/mcp-server-datahub) to read lineage, schema, and ownership — and writes back via DataHub's native Incidents API, plus a guard assertion and owner routing.** It is an AI agent that does real on-call work: when a data-quality check fails, CASCADE finds the root cause, maps the blast radius, raises a real incident, and routes the fix — autonomously.
 
-**▶ Demo video:** *link lands here with the Devpost submission* · **Track:** Agents That Do Real Work · **License:** Apache-2.0
+**[▶ Watch the 2:51 demo](https://youtu.be/AlMSw3hTYGs)** · **Track:** Agents That Do Real Work · **License:** Apache-2.0
 
 ![CASCADE live demo](docs/media/live-demo.gif)
 
@@ -62,7 +62,7 @@ The demo graph is DataHub's **showcase-ecommerce** datapack — **1,049 entities
 
 ## Why the native-incident write-back is novel
 
-The DataHub **MCP server exposes no incident-writing tool** — its writes stop at tags, terms, owners, and descriptions. CASCADE adds `raise_incident` (wrapping DataHub's native `raiseIncident` GraphQL mutation) and `create_assertion` (via `upsertCustomAssertion`). So CASCADE **closes a loop DataHub's own agent stack cannot today** — and both tools are packaged for upstream contribution (`oss/`, filing guide in `oss/SUBMIT_PRS.md`; PR links will land here).
+The DataHub **MCP server exposes no incident-writing tool** — its writes stop at tags, terms, owners, and descriptions. CASCADE adds `raise_incident` (wrapping DataHub's native `raiseIncident` GraphQL mutation) and `create_assertion` (via `upsertCustomAssertion`). So CASCADE **closes a loop DataHub's own agent stack cannot today** — and both tools are **contributed upstream: [acryldata/mcp-server-datahub#147](https://github.com/acryldata/mcp-server-datahub/pull/147)**.
 
 ## Security: the catalog is untrusted input
 
@@ -124,8 +124,8 @@ Rollout tiers, audit log, and the webhook trigger are documented in [docs/deploy
 
 | Contribution | Target | Status |
 |---|---|---|
-| `raise_incident` / `update_incident_status` MCP tools | [mcp-server-datahub](https://github.com/acryldata/mcp-server-datahub) | **prepared — filing in progress** (PR link will land here) |
-| `datahub-incident-response` Skill | DataHub skills | **prepared — issue-first proposal drafted** |
+| `raise_incident` / `update_incident_status` MCP tools | [mcp-server-datahub](https://github.com/acryldata/mcp-server-datahub) | **filed: [PR #147](https://github.com/acryldata/mcp-server-datahub/pull/147)** (514 tests pass, 15 new) |
+| `datahub-incident-response` Skill | [datahub-skills](https://github.com/datahub-project/datahub-skills) | **filed: [PR #56](https://github.com/datahub-project/datahub-skills/pull/56)** (proposal: [#55](https://github.com/datahub-project/datahub-skills/issues/55)) |
 
 ## Going deeper (honest roadmap on DataHub's real surfaces)
 
