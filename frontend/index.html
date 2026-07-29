@@ -243,7 +243,7 @@ async function loadScenario(id){
     </div>
     ${d.no_context?`<div class="ab">
       <div class="ab-h">The proof: <span class="grad2">context, not model</span> — same LLM, with vs without DataHub</div>
-      <div class="ab-h" style="font-size:.85em;opacity:.75;margin-top:4px">Across all three scenarios: <b>0/3</b> root causes without DataHub vs <b>3/3</b> with — graded on the root-cause URN the agent annotates, not on wording.</div>
+      <div class="ab-h" style="font-size:.85em;opacity:.75;margin-top:4px">Measured across 18 runs at two model tiers: <b>0/18</b> root causes without DataHub vs <b>18/18</b> with — same model in both arms, graded on the root-cause table the agent annotates, not on wording. Full protocol: docs/eval.md.</div>
       <div class="ab-cols">
         <div class="ab-col no">
           <div class="ab-t">🔒 WITHOUT DataHub · symptom only</div>

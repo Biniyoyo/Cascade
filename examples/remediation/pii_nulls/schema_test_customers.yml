@@ -1,0 +1,10 @@
+# PROPOSED by CASCADE — requires human review before merge
+# Guard for: Invalid PII (email nulls)
+version: 2
+models:
+  - name: customers
+    columns:
+      - name: cust_email
+        tests:
+          - not_null:
+              name: cascade_guard_customers_cust_email_not_null

@@ -24,17 +24,21 @@ from claude_agent_sdk import (
 
 from cascade.prompts import SYSTEM_PROMPT
 from cascade.tools import CASCADE_TOOLS_SERVER, LAST, reset_last
+from cascade.datahub_embedded import EMBEDDED_DATAHUB_SERVER
+
+# Give stdio MCP servers time to finish their (heavy) startup before the
+# conversation's tool snapshot is taken — the DataHub server imports the full
+# acryl-datahub SDK (~4s).
+os.environ.setdefault("MCP_TIMEOUT", "45000")
+os.environ.setdefault("MCP_TOOL_TIMEOUT", "120000")
 
 DATAHUB_MCP = {
-    "type": "stdio",
-    "command": "uvx",
-    # Pinned for reproducible deploys (latest on PyPI as of 2026-07-26).
-    "args": ["mcp-server-datahub==0.6.0"],
-    "env": {
-        "DATAHUB_GMS_URL": os.environ.get("DATAHUB_GMS_URL", "http://localhost:8080"),
-        "DATAHUB_GMS_TOKEN": os.environ.get("DATAHUB_GMS_TOKEN", "dummy-local"),
-        "TOOLS_IS_MUTATION_ENABLED": "true",
-    },
+    # Streamable-HTTP transport against a persistent warm server instance —
+    # stdio spawn was too slow (heavy acryl-datahub import) for the SDK's
+    # startup tool snapshot. Start it once per machine:
+    #   scripts/start_mcp_server.sh   (or see README quickstart)
+    "type": "sse",
+    "url": os.environ.get("DATAHUB_MCP_URL", "http://127.0.0.1:8000/sse"),
 }
 
 # Read + writeback tools CASCADE is allowed to call, autonomously.
@@ -77,12 +81,19 @@ FINAL_MODEL = "claude-sonnet-5"              # sharper reasoning for the recorde
 
 def build_options(max_budget_usd: float = 1.0,
                   model: str = DEV_MODEL) -> ClaudeAgentOptions:
+    """ACT mode, strictly sandboxed: `tools=[]` removes every built-in tool
+    (Bash, file tools, ToolSearch, ...), so the ONLY tools that exist are the
+    DataHub MCP server's and CASCADE's own — which `allowed_tools` then
+    auto-approves for autonomous use. This enforces the restricted toolset
+    without a permission callback (which would force streaming input and, with
+    this SDK version, interferes with stdio MCP server attachment)."""
     return ClaudeAgentOptions(
         model=model,
         system_prompt=SYSTEM_PROMPT,
-        mcp_servers={"datahub": DATAHUB_MCP, "cascade": CASCADE_TOOLS_SERVER},
+        tools=[],                             # no built-ins — MCP tools only
+        mcp_servers={"datahub": EMBEDDED_DATAHUB_SERVER, "cascade": CASCADE_TOOLS_SERVER},
         allowed_tools=ALLOWED_TOOLS,
-        permission_mode="bypassPermissions",  # autonomous tool use
+        permission_mode="bypassPermissions",  # safe: only the MCP toolset exists
         max_budget_usd=max_budget_usd,        # hard spend cap per run
         max_turns=40,
     )
@@ -116,7 +127,7 @@ def build_propose_options(max_budget_usd: float, model: str,
     return ClaudeAgentOptions(
         model=model,
         system_prompt=SYSTEM_PROMPT,
-        mcp_servers={"datahub": DATAHUB_MCP, "cascade": CASCADE_TOOLS_SERVER},
+        mcp_servers={"datahub": EMBEDDED_DATAHUB_SERVER, "cascade": CASCADE_TOOLS_SERVER},
         allowed_tools=[t for t in ALLOWED_TOOLS if t not in WRITE_TOOLS],
         permission_mode="default",     # writes fall through to the gate above
         can_use_tool=gate,
@@ -193,7 +204,9 @@ async def run_incident(incident_text: str, max_budget_usd: float = 1.0,
                 if isinstance(block, ToolResultBlock):
                     text = ""
                     if isinstance(block.content, list):
-                        text = " ".join(getattr(c, "text", "") for c in block.content)
+                        text = " ".join(
+                            (c.get("text", "") if isinstance(c, dict)
+                             else getattr(c, "text", "")) for c in block.content)
                     elif isinstance(block.content, str):
                         text = block.content
                     steps.append({"kind": "tool_result", "text": text[:4000]})

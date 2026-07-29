@@ -15,7 +15,7 @@ def annotate_step(urn: str) -> dict:
 def test_annotating_expected_urn_passes(scenario):
     steps = [
         {"tool": "mcp__datahub__get_lineage", "input": {"urn": scenario["affected_urn"]}},
-        annotate_step(scenario["expected_root_cause_urn"]),
+        annotate_step(scenario["expected_root_cause_urns"][0]),
     ]
     assert grade_root_cause(steps, "", scenario) is True
 
@@ -32,28 +32,31 @@ def test_empty_steps_and_empty_text_fails():
     assert grade_root_cause([], "", scenario) is False
 
 
-def test_empty_steps_falls_back_to_final_text_urn():
-    scenario = SCENARIOS_BY_ID["null_spike"]
-    final = f"Root cause: {scenario['expected_root_cause_urn']} stopped loading."
-    assert grade_root_cause([], final, scenario) is True
+def test_empty_steps_falls_back_to_final_text_urn(scenario=None):
+    """STRICT v2: a URN merely mentioned in the final text must NOT pass —
+    only the actual update_description write counts."""
+    from cascade.scenarios import SCENARIOS
+    sc = SCENARIOS[0]
+    assert grade_root_cause([], f"root cause is {sc['expected_root_cause_urns'][0]}", sc) is False
+    assert grade_root_cause([], "", sc) is False
 
 
 def test_urn_match_is_case_insensitive():
     scenario = SCENARIOS_BY_ID["null_spike"]
-    steps = [annotate_step(scenario["expected_root_cause_urn"].upper())]
+    steps = [annotate_step(scenario["expected_root_cause_urns"][0].upper())]
     assert grade_root_cause(steps, "", scenario) is True
 
 
 def test_non_dict_steps_are_ignored():
     scenario = SCENARIOS_BY_ID["null_spike"]
-    steps = ["garbage", None, annotate_step(scenario["expected_root_cause_urn"])]
+    steps = ["garbage", None, annotate_step(scenario["expected_root_cause_urns"][0])]
     assert grade_root_cause(steps, "", scenario) is True
 
 
 def test_wrong_tool_does_not_count():
     scenario = SCENARIOS_BY_ID["null_spike"]
     steps = [{"tool": "mcp__datahub__get_dataset",
-              "input": {"entity_urn": scenario["expected_root_cause_urn"]}}]
+              "input": {"entity_urn": scenario["expected_root_cause_urns"][0]}}]
     assert grade_root_cause(steps, "", scenario) is False
 
 

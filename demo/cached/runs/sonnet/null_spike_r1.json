@@ -1,353 +1,23 @@
 {
-  "id": "null_spike",
-  "name": "NULL spike (broken lookup)",
-  "failure_type": "Data quality \u2014 NOT NULL contract violation",
-  "priority": "HIGH",
-  "affected": {
-    "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_details,PROD)",
-    "name": "order_details"
+  "scenario": {
+    "id": "null_spike",
+    "name": "NULL spike (broken lookup)",
+    "failure_type": "Data quality \u2014 NOT NULL contract violation",
+    "affected_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_details,PROD)",
+    "affected_label": "order_details",
+    "symptom": "The `billing_country` column has a sudden spike of NULL/empty values (it is declared NOT NULL and tagged PII), and the Order Entry dashboard's country-level revenue splits are now wrong.",
+    "priority": "HIGH",
+    "expected_root_cause": "countries",
+    "expected_root_cause_urns": [
+      "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.countries,PROD)",
+      "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.countries,PROD)",
+      "urn:li:dataset:(urn:li:dataPlatform:postgres,b2fd91.order_entry_db.order_entry.countries,PROD)"
+    ]
   },
-  "symptom": "The `billing_country` column has a sudden spike of NULL/empty values (it is declared NOT NULL and tagged PII), and the Order Entry dashboard's country-level revenue splits are now wrong.",
-  "root_cause": {
-    "name": "countries",
-    "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.countries,PROD)",
-    "platform": "dbt"
-  },
-  "blast": {
-    "downstream": [
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:looker,b2fd91.order-entry.explore.order_details,PROD)",
-        "type": "DATASET",
-        "name": "Order Details",
-        "platform": "Looker",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dashboard:(tableau,b2fd91.843bf583-900b-f1ba-0532-b5e67a0373dc)",
-        "type": "DASHBOARD",
-        "name": "Order Entry Dashboard",
-        "platform": "Tableau",
-        "degree": 5
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_history,PROD)",
-        "type": "DATASET",
-        "name": "order_history",
-        "platform": "dbt",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:looker,b2fd91.order-entry-looker.view.order_details,PROD)",
-        "type": "DATASET",
-        "name": "order_details",
-        "platform": "Looker",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_details,PROD)",
-        "type": "DATASET",
-        "name": "ORDER_DETAILS",
-        "platform": "Snowflake",
-        "degree": 1
-      },
-      {
-        "urn": "urn:li:dashboard:(powerbi,b2fd91.reports.66666666-7777-8888-9999-000000000000)",
-        "type": "DASHBOARD",
-        "name": "datahub_order_entries",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.ORDER_DETAILS,PROD)",
-        "type": "DATASET",
-        "name": "ORDER_DETAILS",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.b980a8c5-28eb-119e-f6ca-4da32732e5be,PROD)",
-        "type": "DATASET",
-        "name": "Promotions",
-        "platform": "Tableau",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.c067553a-127e-a871-14a0-5f32cb032c78,PROD)",
-        "type": "DATASET",
-        "name": "Order Mode",
-        "platform": "Tableau",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.f8fb6a0b-7be6-690b-cc45-3c6e0fd2bcde,PROD)",
-        "type": "DATASET",
-        "name": "Orders By Day",
-        "platform": "Tableau",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.fadbf744-48be-0929-a47c-5786327a3343,PROD)",
-        "type": "DATASET",
-        "name": "Top Product Category",
-        "platform": "Tableau",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(tableau,b2fd91.89f38fd7-058d-b66a-6db0-4f85f105468a)",
-        "type": "CHART",
-        "name": "Orders By Month",
-        "platform": "Tableau",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(tableau,b2fd91.e051d978-989f-a329-5458-e01721b05570)",
-        "type": "CHART",
-        "name": "Promotions",
-        "platform": "Tableau",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(tableau,b2fd91.e36d7772-ac4d-4fd0-a893-aec88f3aa13e)",
-        "type": "CHART",
-        "name": "Order Mode",
-        "platform": "Tableau",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:dashboard:(looker,b2fd91.dashboards.53)",
-        "type": "DASHBOARD",
-        "name": "Order Entry Dashboard",
-        "platform": "Looker",
-        "degree": 5
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_history,PROD)",
-        "type": "DATASET",
-        "name": "ORDER_HISTORY",
-        "platform": "Snowflake",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Customer_Analytics_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Customer Analytics Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Essential_KPI_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Essential KPI Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Geographic_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Geographic Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Product_Perfromance_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Product Perfromance Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Time_Inteligence_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Time Inteligence Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.4a3af1dd-fd0c-7077-d5fd-aa2fdf87cb23,PROD)",
-        "type": "DATASET",
-        "name": "Custom SQL Query",
-        "platform": "Tableau",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.8bfe7483-1c9a-a0e1-ec84-57207dd37a15,PROD)",
-        "type": "DATASET",
-        "name": "Custom SQL Query",
-        "platform": "Tableau",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.f32082e5-06b8-f46e-9047-4611fffe66b0,PROD)",
-        "type": "DATASET",
-        "name": "Custom SQL Query",
-        "platform": "Tableau",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:chart:(looker,b2fd91.dashboard_elements.221)",
-        "type": "CHART",
-        "name": "Popular Products",
-        "platform": "Looker",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(looker,b2fd91.dashboard_elements.222)",
-        "type": "CHART",
-        "name": "Promotions",
-        "platform": "Looker",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(looker,b2fd91.dashboard_elements.223)",
-        "type": "CHART",
-        "name": "Order Mode",
-        "platform": "Looker",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(looker,b2fd91.dashboard_elements.224)",
-        "type": "CHART",
-        "name": "Orders by Day",
-        "platform": "Looker",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(powerbi,b2fd91.pages.66666666-7777-8888-9999-000000000000.217abe0d5c1cd421c384)",
-        "type": "CHART",
-        "name": "Customer Analysis",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(powerbi,b2fd91.pages.66666666-7777-8888-9999-000000000000.3f48c0bf859b2d14dcd0)",
-        "type": "CHART",
-        "name": "Geographics",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(powerbi,b2fd91.pages.66666666-7777-8888-9999-000000000000.83a9aaa3207edd6c721e)",
-        "type": "CHART",
-        "name": "Executive Summary",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(powerbi,b2fd91.pages.66666666-7777-8888-9999-000000000000.85e432543b30346a0507)",
-        "type": "CHART",
-        "name": "DAX Visual",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(tableau,b2fd91.b8c660a8-10ea-e32a-b823-fa655e1c2f43)",
-        "type": "CHART",
-        "name": "Popular Products Categories",
-        "platform": "Tableau",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_details_replica,PROD)",
-        "type": "DATASET",
-        "name": "ORDER_DETAILS_REPLICA",
-        "platform": "Snowflake",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.37fcfb15-34ae-973a-5ae3-cf63691d48e3,PROD)",
-        "type": "DATASET",
-        "name": "Custom SQL Query",
-        "platform": "Tableau",
-        "degree": 2
-      }
-    ],
-    "counts": {
-      "DATASET": 20,
-      "DASHBOARD": 3,
-      "CHART": 12,
-      "total": 35
-    }
-  },
-  "owners": [
-    {
-      "urn": "urn:li:corpGroup:b2fd91.1e0398a3-113f-475e-b6fc-32ab72a634d2",
-      "name": "DataHub SE Team",
-      "kind": "CorpGroup",
-      "ownership_type": "data_steward"
-    },
-    {
-      "urn": "urn:li:corpGroup:b2fd91.ORG_DATA_PLATFORM",
-      "name": "Data Platform Team",
-      "kind": "CorpGroup",
-      "ownership_type": "data_steward"
-    },
-    {
-      "urn": "urn:li:corpGroup:b2fd91.ORG_DATA_PLATFORM",
-      "name": "Data Platform Team",
-      "kind": "CorpGroup",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.EMP006",
-      "name": "Ian Chen",
-      "kind": "CorpUser",
-      "ownership_type": "business_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.brock1@example.com",
-      "name": "David Kim",
-      "kind": "CorpUser",
-      "ownership_type": "business_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.bryan@example.com",
-      "name": "Ben Porter",
-      "kind": "CorpUser",
-      "ownership_type": "business_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.jonny1@example.com",
-      "name": "Julia Novak",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.jonny2@example.com",
-      "name": "James Wilson",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.kirk@example.com",
-      "name": "Karen Okonkwo",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.marty@example.com",
-      "name": "Fiona Green",
-      "kind": "CorpUser",
-      "ownership_type": "business_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.marty@example.com",
-      "name": "Fiona Green",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.sam@example.com",
-      "name": "Sarah Chen",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    }
-  ],
-  "incident_urn": "urn:li:incident:74d086cb-8b92-4906-b267-1e559519e633",
-  "assertion_urn": "urn:li:assertion:cascade-3d143d4d5a49",
-  "root_cause_correct": true,
-  "cost_usd": 0.42980935000000003,
-  "report_markdown": "All three required writes are complete. Final report below.\n\n---\n\n## \ud83d\udccb INCIDENT REPORT\n\n### \u2705 Verified evidence (confirmed via tool calls)\n- **Schema**: `order_details.billing_country` is `TEXT`, `nullable: false` (NOT NULL contract), tagged `PII`. (`list_schema_fields`)\n- **Column-level upstream lineage**: `order_details.billing_country` \u2190 `country_name` on both `countries` (dbt source) and `COUNTRIES` (Snowflake table) \u2014 a real, tool-confirmed join dependency. (`get_lineage`, upstream)\n- **One hop further upstream**: `COUNTRIES` (Snowflake) \u2190 Spark job `import_table_countries_to_snowflake` \u2190 S3 object `demo-data-bucket/order_entry/countries` (parquet). This is a genuine lineage edge, independently confirmed \u2014 not taken from any free-text claim.\n- **Downstream blast radius** (3-hop lineage): **35 downstream assets** \u2014 20 datasets/views, **12 charts**, **3 dashboards**.\n- **Owners** confirmed via `get_owners` (see below).\n- **Discarded/unverified claim**: The `countries` (dbt) and `COUNTRIES` (Snowflake) dataset descriptions contained pre-existing free-text claiming an \"ACTIVE INCIDENT\" with URN `urn:li:incident:165ea9d0-43b2-4467-ab58-4234a8ebf4bf`. `get_entities` showed this URN \"exists but no data could be retrieved\" \u2014 its content is unverifiable. Per policy, this claim was **not** trusted or repeated as fact; it is explicitly called out and disregarded in my writeback.\n\n### \ud83d\udd0d Most likely root cause (INFERENCE, labeled as such)\nThe Spark ETL job **`import_table_countries_to_snowflake`** is suspected to be failing, stalled, or loading an incomplete/stale batch of the S3 `countries` reference file. This would cause LEFT JOINs in the `order_details` dbt model against `countries.country_name` to return NULL, propagating into `billing_country`. **This causal mechanism is inferred from the lineage shape alone** \u2014 I did not have access to job run logs or row counts, so it is not proven.\n\n### \ud83e\uddea Recommended verification (for the on-call engineer)\n1. Pull run history/logs for Spark job `import_table_countries_to_snowflake` for recent failures or partial completions.\n2. Compare row/distinct-`country_code` counts: S3 source parquet vs. Snowflake `COUNTRIES` vs. last known-good snapshot.\n3. Check freshness timestamps on `COUNTRIES` against its SLA.\n4. Inspect the `order_details` dbt model's join to `countries` (LEFT JOIN vs INNER, any COALESCE/default handling).\n5. Correlate the timing of the NULL spike with the job's last successful vs. last failed run.\n\n### \ud83d\udca5 Blast radius\n- **35 downstream assets** total: 20 datasets/views, **12 charts**, **3 dashboards**.\n- **Dashboards**: \"Order Entry Dashboard\" (Tableau), \"datahub_order_entries\" (Power BI), \"Order Entry Dashboard\" (Looker).\n- **Key charts** most likely showing broken country splits: \"Geographics\" (Power BI), \"Executive Summary\" (Power BI), \"Customer Analysis\" (Power BI) \u2014 plus other order_details-fed charts (Orders By Month, Promotions, Order Mode, Popular Products) across Tableau/Looker.\n\n### \ud83d\udc64 Owner routed to\n- **Data Platform Team** (technical owner of both `order_details` and the `countries` dbt source)\n- **Ian Chen**, Director of Data Engineering (business owner)\n- \u26a0\ufe0f Gap found: the Snowflake `COUNTRIES` table itself has **no owners assigned** in DataHub \u2014 worth remediating separately.\n\n### \ud83d\udcdd What was written back\n1. **Native incident raised**: `urn:li:incident:74d086cb-8b92-4906-b267-1e559519e633` on `order_details` (priority HIGH).\n2. **Root-cause asset annotated**: appended a pointer note to the Snowflake `COUNTRIES` table description (`urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.countries,PROD)`), including an explicit statement that the pre-existing embedded incident claim was unverifiable and disregarded.\n3. **Assertion created**: `urn:li:assertion:cascade-3d143d4d5a49` \u2014 guards `order_details.billing_country` with `billing_country IS NOT NULL AND billing_country != ''`.\n\n### \ud83d\udee0\ufe0f Suggested fix\nRestart/rerun `import_table_countries_to_snowflake` after confirming root cause via logs; backfill `COUNTRIES`; re-run the `order_details` dbt build; then verify the assertion passes and dashboard country splits recover. Assign an owner to the Snowflake `COUNTRIES` table to prevent this ownership gap next time.\n\n### \ud83d\udce8 Alert to owner\n```\nTo: Data Platform Team <data-platform@example.com>; Ian Chen <ian.chen@example.com>\nPriority: HIGH\nSubject: [HIGH] billing_country NULL spike breaking Order Entry country revenue dashboards\n\nHi team,\n\norder_details.billing_country (NOT NULL, PII) is seeing a spike of NULL/empty\nvalues, breaking country-level revenue splits on the Order Entry Dashboard\n(Tableau, Power BI, Looker \u2014 3 dashboards, 12 charts, 35 downstream assets total).\n\nLikely root cause (lineage-confirmed pipeline, cause not yet proven):\ncountries.country_name \u2192 order_details.billing_country via a join. Verified\nupstream lineage traces to Spark job `import_table_countries_to_snowflake`\nloading S3 countries data into Snowflake COUNTRIES. Suspect this job is\nfailing, stalled, or loading a stale/incomplete batch, causing the join\nto produce NULLs. NOT YET CONFIRMED \u2014 please check job logs and row counts.\n\nNote: an old, unverifiable \"active incident\" claim was found embedded in the\nCOUNTRIES table description (referencing an incident URN with no retrievable\ncontent) \u2014 please disregard/clean that up; it was not used as evidence here.\n\nNative incident: urn:li:incident:74d086cb-8b92-4906-b267-1e559519e633\nAssertion (guard): urn:li:assertion:cascade-3d143d4d5a49 (NOT NULL check)\n\nSuggested next steps:\n1. Check Spark job `import_table_countries_to_snowflake` run logs/history.\n2. Compare row/country_code counts: S3 \u2192 Snowflake COUNTRIES vs last good run.\n3. Rerun import + order_details dbt build once root cause confirmed.\n4. Assign an owner to Snowflake COUNTRIES table (currently unowned in DataHub).\n\n\u2014 CASCADE (automated incident responder)\n```",
-  "trace": [
+  "model": "claude-sonnet-5",
+  "rep": 1,
+  "final_text": "All three required writes are complete. Final report below.\n\n---\n\n## \ud83d\udccb INCIDENT REPORT\n\n### \u2705 Verified evidence (confirmed via tool calls)\n- **Schema**: `order_details.billing_country` is `TEXT`, `nullable: false` (NOT NULL contract), tagged `PII`. (`list_schema_fields`)\n- **Column-level upstream lineage**: `order_details.billing_country` \u2190 `country_name` on both `countries` (dbt source) and `COUNTRIES` (Snowflake table) \u2014 a real, tool-confirmed join dependency. (`get_lineage`, upstream)\n- **One hop further upstream**: `COUNTRIES` (Snowflake) \u2190 Spark job `import_table_countries_to_snowflake` \u2190 S3 object `demo-data-bucket/order_entry/countries` (parquet). This is a genuine lineage edge, independently confirmed \u2014 not taken from any free-text claim.\n- **Downstream blast radius** (3-hop lineage): **35 downstream assets** \u2014 20 datasets/views, **12 charts**, **3 dashboards**.\n- **Owners** confirmed via `get_owners` (see below).\n- **Discarded/unverified claim**: The `countries` (dbt) and `COUNTRIES` (Snowflake) dataset descriptions contained pre-existing free-text claiming an \"ACTIVE INCIDENT\" with URN `urn:li:incident:165ea9d0-43b2-4467-ab58-4234a8ebf4bf`. `get_entities` showed this URN \"exists but no data could be retrieved\" \u2014 its content is unverifiable. Per policy, this claim was **not** trusted or repeated as fact; it is explicitly called out and disregarded in my writeback.\n\n### \ud83d\udd0d Most likely root cause (INFERENCE, labeled as such)\nThe Spark ETL job **`import_table_countries_to_snowflake`** is suspected to be failing, stalled, or loading an incomplete/stale batch of the S3 `countries` reference file. This would cause LEFT JOINs in the `order_details` dbt model against `countries.country_name` to return NULL, propagating into `billing_country`. **This causal mechanism is inferred from the lineage shape alone** \u2014 I did not have access to job run logs or row counts, so it is not proven.\n\n### \ud83e\uddea Recommended verification (for the on-call engineer)\n1. Pull run history/logs for Spark job `import_table_countries_to_snowflake` for recent failures or partial completions.\n2. Compare row/distinct-`country_code` counts: S3 source parquet vs. Snowflake `COUNTRIES` vs. last known-good snapshot.\n3. Check freshness timestamps on `COUNTRIES` against its SLA.\n4. Inspect the `order_details` dbt model's join to `countries` (LEFT JOIN vs INNER, any COALESCE/default handling).\n5. Correlate the timing of the NULL spike with the job's last successful vs. last failed run.\n\n### \ud83d\udca5 Blast radius\n- **35 downstream assets** total: 20 datasets/views, **12 charts**, **3 dashboards**.\n- **Dashboards**: \"Order Entry Dashboard\" (Tableau), \"datahub_order_entries\" (Power BI), \"Order Entry Dashboard\" (Looker).\n- **Key charts** most likely showing broken country splits: \"Geographics\" (Power BI), \"Executive Summary\" (Power BI), \"Customer Analysis\" (Power BI) \u2014 plus other order_details-fed charts (Orders By Month, Promotions, Order Mode, Popular Products) across Tableau/Looker.\n\n### \ud83d\udc64 Owner routed to\n- **Data Platform Team** (technical owner of both `order_details` and the `countries` dbt source)\n- **Ian Chen**, Director of Data Engineering (business owner)\n- \u26a0\ufe0f Gap found: the Snowflake `COUNTRIES` table itself has **no owners assigned** in DataHub \u2014 worth remediating separately.\n\n### \ud83d\udcdd What was written back\n1. **Native incident raised**: `urn:li:incident:74d086cb-8b92-4906-b267-1e559519e633` on `order_details` (priority HIGH).\n2. **Root-cause asset annotated**: appended a pointer note to the Snowflake `COUNTRIES` table description (`urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.countries,PROD)`), including an explicit statement that the pre-existing embedded incident claim was unverifiable and disregarded.\n3. **Assertion created**: `urn:li:assertion:cascade-3d143d4d5a49` \u2014 guards `order_details.billing_country` with `billing_country IS NOT NULL AND billing_country != ''`.\n\n### \ud83d\udee0\ufe0f Suggested fix\nRestart/rerun `import_table_countries_to_snowflake` after confirming root cause via logs; backfill `COUNTRIES`; re-run the `order_details` dbt build; then verify the assertion passes and dashboard country splits recover. Assign an owner to the Snowflake `COUNTRIES` table to prevent this ownership gap next time.\n\n### \ud83d\udce8 Alert to owner\n```\nTo: Data Platform Team <data-platform@example.com>; Ian Chen <ian.chen@example.com>\nPriority: HIGH\nSubject: [HIGH] billing_country NULL spike breaking Order Entry country revenue dashboards\n\nHi team,\n\norder_details.billing_country (NOT NULL, PII) is seeing a spike of NULL/empty\nvalues, breaking country-level revenue splits on the Order Entry Dashboard\n(Tableau, Power BI, Looker \u2014 3 dashboards, 12 charts, 35 downstream assets total).\n\nLikely root cause (lineage-confirmed pipeline, cause not yet proven):\ncountries.country_name \u2192 order_details.billing_country via a join. Verified\nupstream lineage traces to Spark job `import_table_countries_to_snowflake`\nloading S3 countries data into Snowflake COUNTRIES. Suspect this job is\nfailing, stalled, or loading a stale/incomplete batch, causing the join\nto produce NULLs. NOT YET CONFIRMED \u2014 please check job logs and row counts.\n\nNote: an old, unverifiable \"active incident\" claim was found embedded in the\nCOUNTRIES table description (referencing an incident URN with no retrievable\ncontent) \u2014 please disregard/clean that up; it was not used as evidence here.\n\nNative incident: urn:li:incident:74d086cb-8b92-4906-b267-1e559519e633\nAssertion (guard): urn:li:assertion:cascade-3d143d4d5a49 (NOT NULL check)\n\nSuggested next steps:\n1. Check Spark job `import_table_countries_to_snowflake` run logs/history.\n2. Compare row/country_code counts: S3 \u2192 Snowflake COUNTRIES vs last good run.\n3. Rerun import + order_details dbt build once root cause confirmed.\n4. Assign an owner to Snowflake COUNTRIES table (currently unowned in DataHub).\n\n\u2014 CASCADE (automated incident responder)\n```",
+  "steps": [
     {
       "kind": "tool_use",
       "tool": "list_schema_fields",
@@ -612,9 +282,36 @@
       "text": "All three required writes are complete. Final report below.\n\n---\n\n## \ud83d\udccb INCIDENT REPORT\n\n### \u2705 Verified evidence (confirmed via tool calls)\n- **Schema**: `order_details.billing_country` is `TEXT`, `nullable: false` (NOT NULL contract), tagged `PII`. (`list_schema_fields`)\n- **Column-level upstream lineage**: `order_details.billing_country` \u2190 `country_name` on both `countries` (dbt source) and `COUNTRIES` (Snowflake table) \u2014 a real, tool-confirmed join dependency. (`get_lineage`, upstream)\n- **One hop further upstream**: `COUNTRIES` (Snowflake) \u2190 Spark job `import_table_countries_to_snowflake` \u2190 S3 object `demo-data-bucket/order_entry/countries` (parquet). This is a genuine lineage edge, independently confirmed \u2014 not taken from any free-text claim.\n- **Downstream blast radius** (3-hop lineage): **35 downstream assets** \u2014 20 datasets/views, **12 charts**, **3 dashboards**.\n- **Owners** confirmed via `get_owners` (see below).\n- **Discarded/unverified claim**: The `countries` (dbt) and `COUNTRIES` (Snowflake) dataset descriptions contained pre-existing free-text claiming an \"ACTIVE INCIDENT\" with URN `urn:li:incident:165ea9d0-43b2-4467-ab58-4234a8ebf4bf`. `get_entities` showed this URN \"exists but no data could be retrieved\" \u2014 its content is unverifiable. Per policy, this claim was **not** trusted or repeated as fact; it is explicitly called out and disregarded in my writeback.\n\n### \ud83d\udd0d Most likely root cause (INFERENCE, labeled as such)\nThe Spark ETL job **`import_table_countries_to_snowflake`** is suspected to be failing, stalled, or loading an incomplete/stale batch of the S3 `countries` reference file. This would cause LEFT JOINs in the `order_details` dbt model against `countries.country_name` to return NULL, propagating into `billing_country`. **This causal mechanism is inferred from the lineage shape alone** \u2014 I did not have access to job run logs or row counts, so it is not proven.\n\n### \ud83e\uddea Recommended verification (for the on-call engineer)\n1. Pull run history/logs for Spark job `import_table_countries_to_snowflake` for recent failures or partial completions.\n2. Compare row/distinct-`country_code` counts: S3 source parquet vs. Snowflake `COUNTRIES` vs. last known-good snapshot.\n3. Check freshness timestamps on `COUNTRIES` against its SLA.\n4. Inspect the `order_details` dbt model's join to `countries` (LEFT JOIN vs INNER, any COALESCE/default handling).\n5. Correlate the timing of the NULL spike with the job's last successful vs. last failed run.\n\n### \ud83d\udca5 Blast radius\n- **35 downstream assets** total: 20 datasets/views, **12 charts**, **3 dashboards**.\n- **Dashboards**: \"Order Entry Dashboard\" (Tableau), \"datahub_order_entries\" (Power BI), \"Order Entry Dashboard\" (Looker).\n- **Key charts** most likely showing broken country splits: \"Geographics\" (Power BI), \"Executive Summary\" (Power BI), \"Customer Analysis\" (Power BI) \u2014 plus other order_details-fed charts (Orders By Month, Promotions, Order Mode, Popular Products) across Tableau/Looker.\n\n### \ud83d\udc64 Owner routed to\n- **Data Platform Team** (technical owner of both `order_details` and the `countries` dbt source)\n- **Ian Chen**, Director of Data Engineering (business owner)\n- \u26a0\ufe0f Gap found: the Snowflake `COUNTRIES` table itself has **no owners assigned** in DataHub \u2014 worth remediating separately.\n\n### \ud83d\udcdd What was written back\n1. **Native incident raised**: `urn:li:incident:74d086cb-8b92-4906-b267-1e559519e633` on `order_details` (priority HIGH).\n2. **Root-cause asset annotated**: appended a pointer note to the Snowflake `COUNTRIES` table description (`urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.countries,PROD)`), including an explicit statement that the pre-existing embedded incident claim was unverifiable and disregarded.\n3. **Assertion created**: `urn:li:assertion:cascade-3d143d4d5a49` \u2014 guards `order_details.billing_country` with `billing_country IS NOT NULL AND billing_country != ''`.\n\n### \ud83d\udee0\ufe0f Suggested fix\nRestart/rerun `import_table_countries_to_snowflake` after confirming root cause via logs; backfill `COUNTRIES`; re-run the `order_details` dbt build; then verify the assertion passes and dashboard country splits recover. Assign an owner to the Snowflake `COUNTRIES` table to prevent this ownership gap next time.\n\n### \ud83d\udce8 Alert to owner\n```\nTo: Data Platform Team <data-platform@example.com>; Ian Chen <ian.chen@example.com>\nPriority: HIGH\nSubject: [HIGH] billing_country NULL spike breaking Order Entry country revenue dashboards\n\nHi team,\n\norder_details.billing_country (NOT NULL, PII) is seeing a spike of NULL/empty\nvalues, breaking country-level revenue splits on the Order Entry Dashboard\n(Tableau, Power BI, Looker \u2014 3 dashboards, 12 charts, 35 downstream assets total).\n\nLikely root cause (lineage-confirmed pipeline, cause not yet proven):\ncountries.country_name \u2192 order_details.billing_country via a join. Verified\nupstream lineage traces to Spark job `import_table_countries_to_snowflake`\nloading S3 countries data into Snowflake COUNTRIES. Suspect this job is\nfailing, stalled, or loading a stale/incomplete batch, causing the join\nto produce NULLs. NOT YET CONFIRMED \u2014 please check job logs and row counts.\n\nNote: an old, unverifiable \"active incident\" claim was found embedded in the\nCOUNTRIES table description (referencing an incident URN with no retrievable\ncontent) \u2014 please disregard/clean that up; it was not used as evidence here.\n\nNative incident: urn:li:incident:74d086cb-8b92-4906-b267-1e559519e633\nAssertion (guard): urn:li:assertion:cascade-3d143d4d5a49 (NOT NULL check)\n\nSuggested next steps:\n1. Check Spark job `import_table_countries_to_snowflake` run logs/history.\n2. Compare row/country_code counts: S3 \u2192 Snowflake COUNTRIES vs last good run.\n3. Rerun import + order_details dbt build once root cause confirmed.\n4. Assign an owner to Snowflake COUNTRIES table (currently unowned in DataHub).\n\n\u2014 CASCADE (automated incident responder)\n```"
     }
   ],
+  "tools_used": [
+    "list_schema_fields",
+    "get_lineage",
+    "get_entities",
+    "get_owners",
+    "get_owners",
+    "get_lineage",
+    "get_lineage",
+    "get_owners",
+    "get_lineage",
+    "get_lineage",
+    "get_lineage",
+    "get_lineage",
+    "get_lineage",
+    "get_lineage",
+    "get_dataset_queries",
+    "raise_incident",
+    "update_description",
+    "create_assertion"
+  ],
+  "incident_urn": "urn:li:incident:74d086cb-8b92-4906-b267-1e559519e633",
+  "assertion_urn": "urn:li:assertion:cascade-3d143d4d5a49",
+  "cost_usd": 0.42980935000000003,
   "no_context": {
     "text": "Here's my best-effort read, with the caveat that I'm working from symptoms only, no lineage/catalog access:\n\n**Likely root cause (unconfirmed guesses, roughly in order of probability):**\n1. An upstream schema/ETL change \u2014 a source field mapping to `billing_country` was renamed, moved, or dropped, and the pipeline is now populating it with null/empty defaults instead of failing loudly.\n2. A new upstream source (e.g., new checkout flow, new region, guest checkout, or a new payment provider) that doesn't collect/pass billing country, feeding into the same table.\n3. A PII-handling/masking job or compliance filter (scrubbing, tokenization, GDPR redaction) misconfigured to null out the field instead of masking it properly \u2014 plausible given it's tagged PII.\n4. A failed join/enrichment step (e.g., address or billing-info lookup) silently returning nulls instead of erroring, possibly due to a key mismatch or upstream table change.\n5. Less likely: a bad backfill/migration that overwrote historical values with empty strings.\n\nThe fact that it's declared NOT NULL but nulls/empties are getting through suggests either constraint enforcement is being bypassed (e.g., writes going through a path that doesn't check, or empty string vs true NULL evading the constraint) \u2014 supports the \"upstream field mapping broke\" or",
     "model": "claude-sonnet-5",
     "named_root_cause": false
-  }
+  },
+  "root_cause_correct": true,
+  "incident_created": true,
+  "assertion_created": true,
+  "grading": "strict structural: update_description write must target expected_root_cause_urn; incident+assertion URNs required for completeness; same model both arms"
 }

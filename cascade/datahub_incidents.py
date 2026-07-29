@@ -66,15 +66,19 @@ PRIORITIES = {"CRITICAL", "HIGH", "MEDIUM", "LOW"}
 
 def raise_incident(resource_urn: str, title: str, description: str,
                    incident_type: str = "OPERATIONAL",
-                   priority: Optional[str] = None) -> str:
+                   priority: Optional[str] = None,
+                   assignee_urns: Optional[list[str]] = None) -> str:
     """Raise a native DataHub incident on an asset. Returns the incident URN.
-    priority is an enum: CRITICAL | HIGH | MEDIUM | LOW."""
+    priority is an enum: CRITICAL | HIGH | MEDIUM | LOW. assignee_urns assigns
+    the incident to the routed owners (corpuser/corpGroup URNs)."""
     inp: dict[str, Any] = {
         "type": incident_type,
         "title": title,
         "description": description,
         "resourceUrn": resource_urn,
     }
+    if assignee_urns:
+        inp["assigneeUrns"] = [u for u in assignee_urns if u.startswith("urn:li:corp")]
     if priority:
         p = priority.upper()
         if p not in PRIORITIES:
@@ -137,6 +141,30 @@ _OWNERS = """query owners($urn: String!) {
     } }
   }
 }"""
+
+
+_REPORT_RESULT = """mutation reportAssertionResult($urn: String!, $result: AssertionResultInput!) {
+  reportAssertionResult(urn: $urn, result: $result)
+}"""
+
+
+def report_assertion_result(assertion_urn: str, success: bool,
+                            external_url: Optional[str] = None,
+                            error_type: Optional[str] = None) -> bool:
+    """Post a native assertion run event (reportAssertionResult), so the guard
+    CASCADE registered evaluates in DataHub's UI/health — driven by whatever
+    check runner actually executed the test. Timestamp comes from the runner."""
+    import time as _time
+    result: dict[str, Any] = {
+        "timestampMillis": int(_time.time() * 1000),
+        "type": "SUCCESS" if success else "FAILURE",
+    }
+    if external_url:
+        result["externalUrl"] = external_url
+    if not success and error_type:
+        result["error"] = {"type": error_type, "message": "reported by check runner"}
+    data = _gql(_REPORT_RESULT, {"urn": assertion_urn, "result": result})
+    return bool(data.get("reportAssertionResult"))
 
 
 def get_owners(resource_urn: str) -> list[dict]:

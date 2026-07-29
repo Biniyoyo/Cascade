@@ -14,8 +14,10 @@ SCENARIOS = [
                     "(it is declared NOT NULL and tagged PII), and the Order Entry dashboard's "
                     "country-level revenue splits are now wrong."),
         "priority": "HIGH",
-        "expected_root_cause": "countries",   # human label (upstream dbt source)
-        "expected_root_cause_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.countries,PROD)",
+        "expected_root_cause": "countries",   # human label (upstream source table)
+        # the root-cause TABLE at any layer of its ingestion chain counts —
+        # postgres origin, snowflake load, or dbt source all name the same table
+        "expected_root_cause_urns": ['urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.countries,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.countries,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:postgres,b2fd91.order_entry_db.order_entry.countries,PROD)'],
     },
     {
         "id": "bad_aggregation",
@@ -28,7 +30,7 @@ SCENARIOS = [
                     "downstream dashboard are inflated."),
         "priority": "CRITICAL",
         "expected_root_cause": "order_items",
-        "expected_root_cause_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.order_items,PROD)",
+        "expected_root_cause_urns": ['urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.order_items,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.order_items,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:postgres,b2fd91.order_entry_db.order_entry.order_items,PROD)'],
     },
     {
         "id": "pii_nulls",
@@ -41,8 +43,8 @@ SCENARIOS = [
         "priority": "HIGH",
         # the true upstream is the physical Snowflake load feeding the dbt model —
         # NOT the affected dbt dataset itself (which would make grading trivial)
-        "expected_root_cause": "snowflake CUSTOMERS load",
-        "expected_root_cause_urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.customers,PROD)",
+        "expected_root_cause": "upstream customers load",
+        "expected_root_cause_urns": ['urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.customers,PROD)', 'urn:li:dataset:(urn:li:dataPlatform:postgres,b2fd91.order_entry_db.order_entry.customers,PROD)'],
     },
 ]
 

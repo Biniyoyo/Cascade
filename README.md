@@ -1,4 +1,4 @@
-# CASCADE — autonomous data-incident response, grounded in DataHub
+# CASCADE — DataHub-Grounded Incident Response
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![CI](https://github.com/Biniyoyo/Cascade/actions/workflows/ci.yml/badge.svg)](https://github.com/Biniyoyo/Cascade/actions)
@@ -6,7 +6,7 @@
 ![DataHub](https://img.shields.io/badge/DataHub-MCP%20Server%20%2B%20native%20APIs-orange)
 ![Claude](https://img.shields.io/badge/agent-Claude%20Agent%20SDK-6E7BFF)
 
-> **CASCADE uses DataHub's Context Graph via the [MCP Server](https://github.com/acryldata/mcp-server-datahub) to read lineage, schema, and ownership — and writes back via DataHub's native Incidents API, plus a guard assertion and owner routing.** It is an AI agent that does real on-call work: when a data-quality check fails, CASCADE finds the root cause, maps the blast radius, raises a real incident, and routes the fix — autonomously.
+> **CASCADE uses DataHub's Context Graph via the [MCP Server](https://github.com/acryldata/mcp-server-datahub) to read lineage, schema, and ownership — and writes back via DataHub's native Incidents API, plus a guard assertion and owner routing.** It is an AI agent that does real on-call work: when a data-quality check fails, CASCADE finds the root cause, maps the blast radius, raises a real incident, and proposes the fix — **autonomous investigation, propose-first write-back.**
 
 **[▶ Watch the 2:51 demo](https://youtu.be/AlMSw3hTYGs)** · **Track:** Agents That Do Real Work · **License:** Apache-2.0
 
@@ -20,25 +20,28 @@ A column silently breaks at 2 a.m. Which dashboards are now wrong? What upstream
 
 > *"This is not an LLM problem. It is a context problem. Without context, you're paying your agents to guess."* — DataHub
 
-CASCADE turns that into a number. The **same model**, the same three incidents, with and without DataHub's graph:
+CASCADE turns that into a number — measured at two model tiers, same model in both arms of each:
 
-| | root causes identified |
-|---|---|
-| **Without DataHub** (symptom only) | **0 / 3** — plausible, generic ETL guesses |
-| **With DataHub** (lineage via MCP) | **3 / 3** — correct upstream asset, annotated and acted on |
+| | without DataHub | with DataHub (lineage via MCP) |
+|---|---|---|
+| claude-haiku-4.5 · 5 runs × 3 scenarios | **0 / 15** | **15 / 15** |
+| claude-sonnet-5 · 1 run × 3 scenarios | **0 / 3** | **3 / 3** |
 
-*Graded structurally: a scenario counts only if the agent annotates the ground-truth root-cause **URN** (`update_description` target), never for merely mentioning a table name. Single recorded run per scenario; re-scoreable from the cached traces with `python scripts/regrade.py`.*
+**Combined: 0/18 → 18/18.** Native incidents and guard assertions: 18/18. Full protocol, per-scenario table, and raw traces: [docs/eval.md](docs/eval.md).
+
+*Graded structurally: a run counts only if the agent's `update_description` write targets the ground-truth root-cause **table** (accepted at any layer of its ingestion chain, never the affected dataset). Prose mentions never count. Hint-free graph reset before every rep. Re-score offline: `python scripts/regrade.py`.*
 
 ![Context A/B](docs/media/ab-proof.png)
 
 ## What CASCADE does (autonomously)
 
 1. **Triage** — reads the failing dataset's schema (`list_schema_fields`) to locate the affected column.
-2. **Root cause** — traces upstream **column-level lineage** (`get_lineage`) to the exact upstream asset/column responsible — with evidence, not guesses.
+2. **Root cause** — traces upstream **column-level lineage** (`get_lineage`) to the **evidence-backed likely root cause** — verified facts and inference kept explicitly separate in the report.
 3. **Blast radius** — traces downstream (`get_lineage`) to enumerate every impacted dashboard, chart, and dataset.
 4. **Route** — reads ownership (`get_owners`) to route the incident to the responsible team/person.
-5. **Write back** — raises a **native DataHub incident**, annotates the root-cause asset, and registers a **native guard assertion** (ready for your assertion runner to evaluate) so the failure mode is tracked in the graph.
+5. **Write back** — raises a **native DataHub incident**, annotates the root-cause asset, and registers a **native guard assertion** for your assertion runner to evaluate (registration is what CASCADE does today; native run-evaluation wiring is roadmap).
 6. **Alert** — drafts a ready-to-send owner notification with root cause, blast radius, and the fix.
+7. **Propose repair** — generates a reviewable remediation artifact: a **dbt schema test + patch proposal** tied to the root-cause lineage and routed owner, human-approval gated (`scripts/propose_fix.py` → `examples/remediation/`). Nothing is auto-applied.
 
 ![Blast radius](docs/media/blast-radius.png)
 ![Write-back receipts](docs/media/write-back.png)
@@ -62,7 +65,7 @@ The demo graph is DataHub's **showcase-ecommerce** datapack — **1,049 entities
 
 ## Why the native-incident write-back is novel
 
-The DataHub **MCP server exposes no incident-writing tool** — its writes stop at tags, terms, owners, and descriptions. CASCADE adds `raise_incident` (wrapping DataHub's native `raiseIncident` GraphQL mutation) and `create_assertion` (via `upsertCustomAssertion`). So CASCADE **closes a loop DataHub's own agent stack cannot today** — and both tools are **contributed upstream: [acryldata/mcp-server-datahub#147](https://github.com/acryldata/mcp-server-datahub/pull/147)**.
+The DataHub **MCP server exposes no incident-writing tool** — its writes stop at tags, terms, owners, and descriptions. CASCADE adds `raise_incident` (wrapping DataHub's native `raiseIncident` GraphQL mutation) and `create_assertion` (via `upsertCustomAssertion`). So CASCADE **closes a loop DataHub's own agent stack cannot today** — The incident tools (`raise_incident`, `update_incident_status`) are **proposed upstream in [acryldata/mcp-server-datahub#147](https://github.com/acryldata/mcp-server-datahub/pull/147)**; the guard-assertion write uses DataHub's native `upsertCustomAssertion` GraphQL API directly.
 
 ## Security: the catalog is untrusted input
 
@@ -107,7 +110,7 @@ python run_eval.py                   # all 3 scenarios; refreshes the cached tra
 
 ## Reliability — and exactly how it's graded
 
-`run_eval.py` injects 3 known-root-cause incidents (NULL spike, metric inflation, PII completeness) and grades **structurally**: a scenario passes iff the agent's `update_description` targets the ground-truth root-cause URN (`cascade/scenarios.py` → `expected_root_cause_urn`). Result: **3/3 with DataHub, 0/3 for the no-context control.** Single run per scenario; `scripts/regrade.py` re-scores the shipped traces so the claim is verifiable offline.
+`run_eval.py` injects 3 known-root-cause incidents (NULL spike, metric inflation, PII completeness) and grades **structurally**: a scenario passes iff the agent's `update_description` targets the ground-truth root-cause URN (`cascade/scenarios.py` → `expected_root_cause_urn`). Result: **18/18 with DataHub, 0/18 for the no-context controls** across both model tiers ([docs/eval.md](docs/eval.md)); `scripts/regrade.py` re-scores the shipped traces so the claim is verifiable offline.
 
 *Honesty note: the showcase traces were recorded in a fuller development harness — you'll see auxiliary calls (e.g. shell/jq handling of oversized lineage payloads) alongside the DataHub MCP calls; the shipped `ALLOWED_TOOLS` runs the same procedure with the DataHub + CASCADE toolset.*
 
@@ -117,7 +120,7 @@ Rollout tiers, audit log, and the webhook trigger are documented in [docs/deploy
 
 ## AI + cost
 
-- Model: Claude (Haiku for live/dev ~**$0.13/run**; Sonnet for the recorded showcase). Model-agnostic via MCP.
+- Model: Claude — **measured $0.08–$0.13/run on Haiku** (see eval), ~$0.37–$0.56 on Sonnet (the recorded showcase tier). Model-agnostic via MCP.
 - Spend-capped per run (`max_budget_usd`) and per deployment (global + per-session caps).
 
 ## Open-source contributions (`oss/`)

@@ -1,353 +1,23 @@
 {
-  "id": "bad_aggregation",
-  "name": "Inflated totals (duplicated line items)",
-  "failure_type": "Correctness \u2014 metric inflation",
-  "priority": "CRITICAL",
-  "affected": {
-    "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_details,PROD)",
-    "name": "order_details"
+  "scenario": {
+    "id": "bad_aggregation",
+    "name": "Inflated totals (duplicated line items)",
+    "failure_type": "Correctness \u2014 metric inflation",
+    "affected_urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_details,PROD)",
+    "affected_label": "order_details",
+    "symptom": "Order totals in `order_details` are roughly doubled since the last run \u2014 line items appear duplicated, so revenue and quantity metrics on every downstream dashboard are inflated.",
+    "priority": "CRITICAL",
+    "expected_root_cause": "order_items",
+    "expected_root_cause_urns": [
+      "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.order_items,PROD)",
+      "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.order_items,PROD)",
+      "urn:li:dataset:(urn:li:dataPlatform:postgres,b2fd91.order_entry_db.order_entry.order_items,PROD)"
+    ]
   },
-  "symptom": "Order totals in `order_details` are roughly doubled since the last run \u2014 line items appear duplicated, so revenue and quantity metrics on every downstream dashboard are inflated.",
-  "root_cause": {
-    "name": "order_items",
-    "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.order_items,PROD)",
-    "platform": "dbt"
-  },
-  "blast": {
-    "downstream": [
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:looker,b2fd91.order-entry.explore.order_details,PROD)",
-        "type": "DATASET",
-        "name": "Order Details",
-        "platform": "Looker",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dashboard:(tableau,b2fd91.843bf583-900b-f1ba-0532-b5e67a0373dc)",
-        "type": "DASHBOARD",
-        "name": "Order Entry Dashboard",
-        "platform": "Tableau",
-        "degree": 5
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.ORDER_ENTRY_DB.analytics.order_history,PROD)",
-        "type": "DATASET",
-        "name": "order_history",
-        "platform": "dbt",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:looker,b2fd91.order-entry-looker.view.order_details,PROD)",
-        "type": "DATASET",
-        "name": "order_details",
-        "platform": "Looker",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_details,PROD)",
-        "type": "DATASET",
-        "name": "ORDER_DETAILS",
-        "platform": "Snowflake",
-        "degree": 1
-      },
-      {
-        "urn": "urn:li:dashboard:(powerbi,b2fd91.reports.66666666-7777-8888-9999-000000000000)",
-        "type": "DASHBOARD",
-        "name": "datahub_order_entries",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.ORDER_DETAILS,PROD)",
-        "type": "DATASET",
-        "name": "ORDER_DETAILS",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.b980a8c5-28eb-119e-f6ca-4da32732e5be,PROD)",
-        "type": "DATASET",
-        "name": "Promotions",
-        "platform": "Tableau",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.c067553a-127e-a871-14a0-5f32cb032c78,PROD)",
-        "type": "DATASET",
-        "name": "Order Mode",
-        "platform": "Tableau",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.f8fb6a0b-7be6-690b-cc45-3c6e0fd2bcde,PROD)",
-        "type": "DATASET",
-        "name": "Orders By Day",
-        "platform": "Tableau",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.fadbf744-48be-0929-a47c-5786327a3343,PROD)",
-        "type": "DATASET",
-        "name": "Top Product Category",
-        "platform": "Tableau",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(tableau,b2fd91.89f38fd7-058d-b66a-6db0-4f85f105468a)",
-        "type": "CHART",
-        "name": "Orders By Month",
-        "platform": "Tableau",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(tableau,b2fd91.e051d978-989f-a329-5458-e01721b05570)",
-        "type": "CHART",
-        "name": "Promotions",
-        "platform": "Tableau",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(tableau,b2fd91.e36d7772-ac4d-4fd0-a893-aec88f3aa13e)",
-        "type": "CHART",
-        "name": "Order Mode",
-        "platform": "Tableau",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:dashboard:(looker,b2fd91.dashboards.53)",
-        "type": "DASHBOARD",
-        "name": "Order Entry Dashboard",
-        "platform": "Looker",
-        "degree": 5
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_history,PROD)",
-        "type": "DATASET",
-        "name": "ORDER_HISTORY",
-        "platform": "Snowflake",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Customer_Analytics_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Customer Analytics Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Essential_KPI_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Essential KPI Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Geographic_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Geographic Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Product_Perfromance_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Product Perfromance Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:powerbi,b2fd91.datahub_order_entries.Time_Inteligence_Measures,PROD)",
-        "type": "DATASET",
-        "name": "Time Inteligence Measures",
-        "platform": "Power BI",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.4a3af1dd-fd0c-7077-d5fd-aa2fdf87cb23,PROD)",
-        "type": "DATASET",
-        "name": "Custom SQL Query",
-        "platform": "Tableau",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.8bfe7483-1c9a-a0e1-ec84-57207dd37a15,PROD)",
-        "type": "DATASET",
-        "name": "Custom SQL Query",
-        "platform": "Tableau",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.f32082e5-06b8-f46e-9047-4611fffe66b0,PROD)",
-        "type": "DATASET",
-        "name": "Custom SQL Query",
-        "platform": "Tableau",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:chart:(looker,b2fd91.dashboard_elements.221)",
-        "type": "CHART",
-        "name": "Popular Products",
-        "platform": "Looker",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(looker,b2fd91.dashboard_elements.222)",
-        "type": "CHART",
-        "name": "Promotions",
-        "platform": "Looker",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(looker,b2fd91.dashboard_elements.223)",
-        "type": "CHART",
-        "name": "Order Mode",
-        "platform": "Looker",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(looker,b2fd91.dashboard_elements.224)",
-        "type": "CHART",
-        "name": "Orders by Day",
-        "platform": "Looker",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:chart:(powerbi,b2fd91.pages.66666666-7777-8888-9999-000000000000.217abe0d5c1cd421c384)",
-        "type": "CHART",
-        "name": "Customer Analysis",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(powerbi,b2fd91.pages.66666666-7777-8888-9999-000000000000.3f48c0bf859b2d14dcd0)",
-        "type": "CHART",
-        "name": "Geographics",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(powerbi,b2fd91.pages.66666666-7777-8888-9999-000000000000.83a9aaa3207edd6c721e)",
-        "type": "CHART",
-        "name": "Executive Summary",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(powerbi,b2fd91.pages.66666666-7777-8888-9999-000000000000.85e432543b30346a0507)",
-        "type": "CHART",
-        "name": "DAX Visual",
-        "platform": "Power BI",
-        "degree": 3
-      },
-      {
-        "urn": "urn:li:chart:(tableau,b2fd91.b8c660a8-10ea-e32a-b823-fa655e1c2f43)",
-        "type": "CHART",
-        "name": "Popular Products Categories",
-        "platform": "Tableau",
-        "degree": 4
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.analytics.order_details_replica,PROD)",
-        "type": "DATASET",
-        "name": "ORDER_DETAILS_REPLICA",
-        "platform": "Snowflake",
-        "degree": 2
-      },
-      {
-        "urn": "urn:li:dataset:(urn:li:dataPlatform:tableau,b2fd91.37fcfb15-34ae-973a-5ae3-cf63691d48e3,PROD)",
-        "type": "DATASET",
-        "name": "Custom SQL Query",
-        "platform": "Tableau",
-        "degree": 2
-      }
-    ],
-    "counts": {
-      "DATASET": 20,
-      "DASHBOARD": 3,
-      "CHART": 12,
-      "total": 35
-    }
-  },
-  "owners": [
-    {
-      "urn": "urn:li:corpGroup:b2fd91.1e0398a3-113f-475e-b6fc-32ab72a634d2",
-      "name": "DataHub SE Team",
-      "kind": "CorpGroup",
-      "ownership_type": "data_steward"
-    },
-    {
-      "urn": "urn:li:corpGroup:b2fd91.ORG_DATA_PLATFORM",
-      "name": "Data Platform Team",
-      "kind": "CorpGroup",
-      "ownership_type": "data_steward"
-    },
-    {
-      "urn": "urn:li:corpGroup:b2fd91.ORG_DATA_PLATFORM",
-      "name": "Data Platform Team",
-      "kind": "CorpGroup",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.EMP006",
-      "name": "Ian Chen",
-      "kind": "CorpUser",
-      "ownership_type": "business_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.brock1@example.com",
-      "name": "David Kim",
-      "kind": "CorpUser",
-      "ownership_type": "business_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.bryan@example.com",
-      "name": "Ben Porter",
-      "kind": "CorpUser",
-      "ownership_type": "business_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.jonny1@example.com",
-      "name": "Julia Novak",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.jonny2@example.com",
-      "name": "James Wilson",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.kirk@example.com",
-      "name": "Karen Okonkwo",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.marty@example.com",
-      "name": "Fiona Green",
-      "kind": "CorpUser",
-      "ownership_type": "business_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.marty@example.com",
-      "name": "Fiona Green",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    },
-    {
-      "urn": "urn:li:corpuser:b2fd91.sam@example.com",
-      "name": "Sarah Chen",
-      "kind": "CorpUser",
-      "ownership_type": "technical_owner"
-    }
-  ],
-  "incident_urn": "urn:li:incident:67a9bc89-da03-43c3-84ce-2b2b1dbdc670",
-  "assertion_urn": "urn:li:assertion:cascade-b62eafdf0286",
-  "root_cause_correct": true,
-  "cost_usd": 0.55736115,
-  "report_markdown": "All three write-backs completed. Final report below.\n\n---\n\n## \ud83d\udccb INCIDENT REPORT \u2014 Order Metrics Inflation in `order_details`\n\n### \u2705 Verified evidence (confirmed by tool calls)\n- **Schema**: `order_details` (dbt, `ORDER_ENTRY_DB.analytics`) has `line_total = unit_price * quantity` and `order_total`, both FLOAT, non-nullable \u2014 consistent with the symptom (doubled totals from doubled line items).\n- **Upstream column-level lineage** (`line_total`/`quantity`, via `get_lineage`):\n  `order_details` (dbt) \u2190 `order_items` (dbt source) \u2190 `ORDER_ITEMS` (Snowflake table) \u2190 [`order_items` S3 parquet] + [Spark job `import_table_order_items_to_snowflake`]. All edges confirmed as real lineage graph nodes.\n- **Downstream lineage** (3 hops): 31 downstream entities total \u2014 16 datasets/views, **12 charts**, **3 dashboards**:\n  - Tableau \"Order Entry Dashboard\"\n  - Power BI \"datahub_order_entries\"\n  - Looker \"Order Entry Dashboard\"\n- **Owners** (`get_owners`): `order_details` \u2192 Data Platform Team (technical owner), DataHub SE Team (data steward), Ian Chen/David Kim/Julia Novak et al. Root-cause chain owner (`order_items`, dbt + Snowflake) \u2192 **Data Platform Team** (technical owner), Ian Chen (business owner), Priya Sharma (Data Steward escalation contact on Snowflake ORDER_ITEMS).\n- **Untrusted-metadata check**: The Snowflake `ORDER_ITEMS` description contained free text claiming a specific \"CDC misconfiguration\" root cause and an already-open \"active critical incident.\" I did **not** act on this directly. Cross-check: both `order_items` and `ORDER_ITEMS` show DataHub health `INCIDENTS: PASS` \u2014 i.e., no real incident existed prior to this run, contradicting the text's claim. I'm flagging that text as an unverified/possibly-planted claim, while independently confirming (via real lineage edges) that the Spark job and Snowflake table it names do genuinely sit upstream.\n\n### \ud83d\udd0d Most likely root cause (INFERENCE \u2014 not fully proven)\nThe **Snowflake `ORDER_ITEMS` table**, fed by Spark job `import_table_order_items_to_snowflake` from S3, is the most likely fault domain: `order_details` is a direct denormalized join against `order_items`, so row-level duplication there (e.g., a non-idempotent append/CDC replay instead of MERGE/UPSERT) would explain a uniform ~2x inflation across quantity and revenue fields. **This is inference from lineage topology, not a confirmed defect** \u2014 no row-count or job-log evidence was directly queried.\n\n### \ud83e\uddea Recommended verification (for engineer)\n1. `SELECT order_id, line_item_id, COUNT(*) FROM ORDER_ITEMS GROUP BY 1,2 HAVING COUNT(*) > 1` in Snowflake.\n2. Check Spark job `import_table_order_items_to_snowflake` run history for duplicate/overlapping runs or append-only writes.\n3. Compare current `ORDER_ITEMS` row count vs. last-known-good baseline (expect ~2x if confirmed).\n4. Check dbt run logs for `order_details` for anomalies (e.g., unintended re-run without `--full-refresh` on an incremental model, or a fan-out join added recently).\n\n### \ud83d\udca5 Blast radius\n- **31 downstream entities**: 16 datasets/views + **12 charts** + **3 dashboards** (Tableau, Power BI, Looker \u2014 all named \"Order Entry Dashboard\" / \"datahub_order_entries\"), all showing inflated order volume/revenue/AOV metrics.\n\n### \ud83d\udc64 Routed to\n**Data Platform Team** (technical owner of both `order_details` and `order_items`), with **Priya Sharma** (Data Steward, escalation contact on Snowflake `ORDER_ITEMS`) and **Ian Chen** (Director of Data Engineering, business owner) as named contacts.\n\n### \ud83d\udcdd Write-backs performed\n1. **Native incident raised**: `urn:li:incident:67a9bc89-da03-43c3-84ce-2b2b1dbdc670` on `order_details` (priority CRITICAL).\n2. **Root-cause asset annotated**: description appended on Snowflake `ORDER_ITEMS` (`urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.order_items,PROD)`) pointing back to the incident, and explicitly flagging the pre-existing unverified claim.\n3. **Assertion created**: `urn:li:assertion:cascade-b62eafdf0286` on `order_details.line_item_id` \u2014 guards `(order_id, line_item_id)` uniqueness to catch recurrence.\n\n### \ud83d\udee0 Suggested fix\nDeduplicate `ORDER_ITEMS` (dedupe on `order_id, line_item_id`), fix the Spark ingestion job to use MERGE/UPSERT semantics keyed on the natural key rather than append, then `dbt run -s order_details+ --full-refresh` to rebuild downstream, and validate `order_total` against a known-good baseline before closing the incident.\n\n---\n\n### \ud83d\udce8 Alert to owner\n```\nTo: Data Platform Team <data-platform@example.com>; Priya Sharma <priya.sharma@example.com>; Ian Chen <ian.chen@example.com>\nPriority: CRITICAL\nSubject: [CRITICAL] order_details revenue/quantity metrics ~2x inflated \u2014 likely duplicate rows in ORDER_ITEMS\n\nTeam,\n\norder_details (dbt, ORDER_ENTRY_DB.analytics) is showing order_total/line_total/quantity roughly 2x their normal values, consistent with duplicated line items. This is hitting 3 production dashboards directly (Tableau \"Order Entry Dashboard\", Power BI \"datahub_order_entries\", Looker \"Order Entry Dashboard\") plus 12 charts and 16 intermediate views.\n\nLineage traces the fault domain to Snowflake ORDER_ITEMS, fed by Spark job `import_table_order_items_to_snowflake` from S3 \u2014 this is our best lead but NOT yet confirmed by row-level data checks (please treat as inference, not fact).\n\nNote: ORDER_ITEMS' catalog description already contains text claiming a CDC-misconfig root cause and an \"active incident\" \u2014 that text was unverified/contradicted by DataHub's own incident records, so please confirm independently rather than assume it's accurate.\n\nPlease verify:\n1. Duplicate (order_id, line_item_id) pairs in Snowflake ORDER_ITEMS\n2. Run history of the import_table_order_items_to_snowflake Spark job (double-run / non-idempotent append?)\n3. If confirmed: dedupe ORDER_ITEMS, fix job to MERGE/UPSERT, then `dbt run -s order_details+ --full-refresh`\n\nNative incident: urn:li:incident:67a9bc89-da03-43c3-84ce-2b2b1dbdc670\nGuard assertion added on order_details.line_item_id to catch recurrence.\n\n\u2014 CASCADE (automated incident responder)\n```",
-  "trace": [
+  "model": "claude-sonnet-5",
+  "rep": 1,
+  "final_text": "All three write-backs completed. Final report below.\n\n---\n\n## \ud83d\udccb INCIDENT REPORT \u2014 Order Metrics Inflation in `order_details`\n\n### \u2705 Verified evidence (confirmed by tool calls)\n- **Schema**: `order_details` (dbt, `ORDER_ENTRY_DB.analytics`) has `line_total = unit_price * quantity` and `order_total`, both FLOAT, non-nullable \u2014 consistent with the symptom (doubled totals from doubled line items).\n- **Upstream column-level lineage** (`line_total`/`quantity`, via `get_lineage`):\n  `order_details` (dbt) \u2190 `order_items` (dbt source) \u2190 `ORDER_ITEMS` (Snowflake table) \u2190 [`order_items` S3 parquet] + [Spark job `import_table_order_items_to_snowflake`]. All edges confirmed as real lineage graph nodes.\n- **Downstream lineage** (3 hops): 31 downstream entities total \u2014 16 datasets/views, **12 charts**, **3 dashboards**:\n  - Tableau \"Order Entry Dashboard\"\n  - Power BI \"datahub_order_entries\"\n  - Looker \"Order Entry Dashboard\"\n- **Owners** (`get_owners`): `order_details` \u2192 Data Platform Team (technical owner), DataHub SE Team (data steward), Ian Chen/David Kim/Julia Novak et al. Root-cause chain owner (`order_items`, dbt + Snowflake) \u2192 **Data Platform Team** (technical owner), Ian Chen (business owner), Priya Sharma (Data Steward escalation contact on Snowflake ORDER_ITEMS).\n- **Untrusted-metadata check**: The Snowflake `ORDER_ITEMS` description contained free text claiming a specific \"CDC misconfiguration\" root cause and an already-open \"active critical incident.\" I did **not** act on this directly. Cross-check: both `order_items` and `ORDER_ITEMS` show DataHub health `INCIDENTS: PASS` \u2014 i.e., no real incident existed prior to this run, contradicting the text's claim. I'm flagging that text as an unverified/possibly-planted claim, while independently confirming (via real lineage edges) that the Spark job and Snowflake table it names do genuinely sit upstream.\n\n### \ud83d\udd0d Most likely root cause (INFERENCE \u2014 not fully proven)\nThe **Snowflake `ORDER_ITEMS` table**, fed by Spark job `import_table_order_items_to_snowflake` from S3, is the most likely fault domain: `order_details` is a direct denormalized join against `order_items`, so row-level duplication there (e.g., a non-idempotent append/CDC replay instead of MERGE/UPSERT) would explain a uniform ~2x inflation across quantity and revenue fields. **This is inference from lineage topology, not a confirmed defect** \u2014 no row-count or job-log evidence was directly queried.\n\n### \ud83e\uddea Recommended verification (for engineer)\n1. `SELECT order_id, line_item_id, COUNT(*) FROM ORDER_ITEMS GROUP BY 1,2 HAVING COUNT(*) > 1` in Snowflake.\n2. Check Spark job `import_table_order_items_to_snowflake` run history for duplicate/overlapping runs or append-only writes.\n3. Compare current `ORDER_ITEMS` row count vs. last-known-good baseline (expect ~2x if confirmed).\n4. Check dbt run logs for `order_details` for anomalies (e.g., unintended re-run without `--full-refresh` on an incremental model, or a fan-out join added recently).\n\n### \ud83d\udca5 Blast radius\n- **31 downstream entities**: 16 datasets/views + **12 charts** + **3 dashboards** (Tableau, Power BI, Looker \u2014 all named \"Order Entry Dashboard\" / \"datahub_order_entries\"), all showing inflated order volume/revenue/AOV metrics.\n\n### \ud83d\udc64 Routed to\n**Data Platform Team** (technical owner of both `order_details` and `order_items`), with **Priya Sharma** (Data Steward, escalation contact on Snowflake `ORDER_ITEMS`) and **Ian Chen** (Director of Data Engineering, business owner) as named contacts.\n\n### \ud83d\udcdd Write-backs performed\n1. **Native incident raised**: `urn:li:incident:67a9bc89-da03-43c3-84ce-2b2b1dbdc670` on `order_details` (priority CRITICAL).\n2. **Root-cause asset annotated**: description appended on Snowflake `ORDER_ITEMS` (`urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.order_items,PROD)`) pointing back to the incident, and explicitly flagging the pre-existing unverified claim.\n3. **Assertion created**: `urn:li:assertion:cascade-b62eafdf0286` on `order_details.line_item_id` \u2014 guards `(order_id, line_item_id)` uniqueness to catch recurrence.\n\n### \ud83d\udee0 Suggested fix\nDeduplicate `ORDER_ITEMS` (dedupe on `order_id, line_item_id`), fix the Spark ingestion job to use MERGE/UPSERT semantics keyed on the natural key rather than append, then `dbt run -s order_details+ --full-refresh` to rebuild downstream, and validate `order_total` against a known-good baseline before closing the incident.\n\n---\n\n### \ud83d\udce8 Alert to owner\n```\nTo: Data Platform Team <data-platform@example.com>; Priya Sharma <priya.sharma@example.com>; Ian Chen <ian.chen@example.com>\nPriority: CRITICAL\nSubject: [CRITICAL] order_details revenue/quantity metrics ~2x inflated \u2014 likely duplicate rows in ORDER_ITEMS\n\nTeam,\n\norder_details (dbt, ORDER_ENTRY_DB.analytics) is showing order_total/line_total/quantity roughly 2x their normal values, consistent with duplicated line items. This is hitting 3 production dashboards directly (Tableau \"Order Entry Dashboard\", Power BI \"datahub_order_entries\", Looker \"Order Entry Dashboard\") plus 12 charts and 16 intermediate views.\n\nLineage traces the fault domain to Snowflake ORDER_ITEMS, fed by Spark job `import_table_order_items_to_snowflake` from S3 \u2014 this is our best lead but NOT yet confirmed by row-level data checks (please treat as inference, not fact).\n\nNote: ORDER_ITEMS' catalog description already contains text claiming a CDC-misconfig root cause and an \"active incident\" \u2014 that text was unverified/contradicted by DataHub's own incident records, so please confirm independently rather than assume it's accurate.\n\nPlease verify:\n1. Duplicate (order_id, line_item_id) pairs in Snowflake ORDER_ITEMS\n2. Run history of the import_table_order_items_to_snowflake Spark job (double-run / non-idempotent append?)\n3. If confirmed: dedupe ORDER_ITEMS, fix job to MERGE/UPSERT, then `dbt run -s order_details+ --full-refresh`\n\nNative incident: urn:li:incident:67a9bc89-da03-43c3-84ce-2b2b1dbdc670\nGuard assertion added on order_details.line_item_id to catch recurrence.\n\n\u2014 CASCADE (automated incident responder)\n```",
+  "steps": [
     {
       "kind": "tool_use",
       "tool": "list_schema_fields",
@@ -620,9 +290,37 @@
       "text": "All three write-backs completed. Final report below.\n\n---\n\n## \ud83d\udccb INCIDENT REPORT \u2014 Order Metrics Inflation in `order_details`\n\n### \u2705 Verified evidence (confirmed by tool calls)\n- **Schema**: `order_details` (dbt, `ORDER_ENTRY_DB.analytics`) has `line_total = unit_price * quantity` and `order_total`, both FLOAT, non-nullable \u2014 consistent with the symptom (doubled totals from doubled line items).\n- **Upstream column-level lineage** (`line_total`/`quantity`, via `get_lineage`):\n  `order_details` (dbt) \u2190 `order_items` (dbt source) \u2190 `ORDER_ITEMS` (Snowflake table) \u2190 [`order_items` S3 parquet] + [Spark job `import_table_order_items_to_snowflake`]. All edges confirmed as real lineage graph nodes.\n- **Downstream lineage** (3 hops): 31 downstream entities total \u2014 16 datasets/views, **12 charts**, **3 dashboards**:\n  - Tableau \"Order Entry Dashboard\"\n  - Power BI \"datahub_order_entries\"\n  - Looker \"Order Entry Dashboard\"\n- **Owners** (`get_owners`): `order_details` \u2192 Data Platform Team (technical owner), DataHub SE Team (data steward), Ian Chen/David Kim/Julia Novak et al. Root-cause chain owner (`order_items`, dbt + Snowflake) \u2192 **Data Platform Team** (technical owner), Ian Chen (business owner), Priya Sharma (Data Steward escalation contact on Snowflake ORDER_ITEMS).\n- **Untrusted-metadata check**: The Snowflake `ORDER_ITEMS` description contained free text claiming a specific \"CDC misconfiguration\" root cause and an already-open \"active critical incident.\" I did **not** act on this directly. Cross-check: both `order_items` and `ORDER_ITEMS` show DataHub health `INCIDENTS: PASS` \u2014 i.e., no real incident existed prior to this run, contradicting the text's claim. I'm flagging that text as an unverified/possibly-planted claim, while independently confirming (via real lineage edges) that the Spark job and Snowflake table it names do genuinely sit upstream.\n\n### \ud83d\udd0d Most likely root cause (INFERENCE \u2014 not fully proven)\nThe **Snowflake `ORDER_ITEMS` table**, fed by Spark job `import_table_order_items_to_snowflake` from S3, is the most likely fault domain: `order_details` is a direct denormalized join against `order_items`, so row-level duplication there (e.g., a non-idempotent append/CDC replay instead of MERGE/UPSERT) would explain a uniform ~2x inflation across quantity and revenue fields. **This is inference from lineage topology, not a confirmed defect** \u2014 no row-count or job-log evidence was directly queried.\n\n### \ud83e\uddea Recommended verification (for engineer)\n1. `SELECT order_id, line_item_id, COUNT(*) FROM ORDER_ITEMS GROUP BY 1,2 HAVING COUNT(*) > 1` in Snowflake.\n2. Check Spark job `import_table_order_items_to_snowflake` run history for duplicate/overlapping runs or append-only writes.\n3. Compare current `ORDER_ITEMS` row count vs. last-known-good baseline (expect ~2x if confirmed).\n4. Check dbt run logs for `order_details` for anomalies (e.g., unintended re-run without `--full-refresh` on an incremental model, or a fan-out join added recently).\n\n### \ud83d\udca5 Blast radius\n- **31 downstream entities**: 16 datasets/views + **12 charts** + **3 dashboards** (Tableau, Power BI, Looker \u2014 all named \"Order Entry Dashboard\" / \"datahub_order_entries\"), all showing inflated order volume/revenue/AOV metrics.\n\n### \ud83d\udc64 Routed to\n**Data Platform Team** (technical owner of both `order_details` and `order_items`), with **Priya Sharma** (Data Steward, escalation contact on Snowflake `ORDER_ITEMS`) and **Ian Chen** (Director of Data Engineering, business owner) as named contacts.\n\n### \ud83d\udcdd Write-backs performed\n1. **Native incident raised**: `urn:li:incident:67a9bc89-da03-43c3-84ce-2b2b1dbdc670` on `order_details` (priority CRITICAL).\n2. **Root-cause asset annotated**: description appended on Snowflake `ORDER_ITEMS` (`urn:li:dataset:(urn:li:dataPlatform:snowflake,b2fd91.order_entry_db.order_entry.order_items,PROD)`) pointing back to the incident, and explicitly flagging the pre-existing unverified claim.\n3. **Assertion created**: `urn:li:assertion:cascade-b62eafdf0286` on `order_details.line_item_id` \u2014 guards `(order_id, line_item_id)` uniqueness to catch recurrence.\n\n### \ud83d\udee0 Suggested fix\nDeduplicate `ORDER_ITEMS` (dedupe on `order_id, line_item_id`), fix the Spark ingestion job to use MERGE/UPSERT semantics keyed on the natural key rather than append, then `dbt run -s order_details+ --full-refresh` to rebuild downstream, and validate `order_total` against a known-good baseline before closing the incident.\n\n---\n\n### \ud83d\udce8 Alert to owner\n```\nTo: Data Platform Team <data-platform@example.com>; Priya Sharma <priya.sharma@example.com>; Ian Chen <ian.chen@example.com>\nPriority: CRITICAL\nSubject: [CRITICAL] order_details revenue/quantity metrics ~2x inflated \u2014 likely duplicate rows in ORDER_ITEMS\n\nTeam,\n\norder_details (dbt, ORDER_ENTRY_DB.analytics) is showing order_total/line_total/quantity roughly 2x their normal values, consistent with duplicated line items. This is hitting 3 production dashboards directly (Tableau \"Order Entry Dashboard\", Power BI \"datahub_order_entries\", Looker \"Order Entry Dashboard\") plus 12 charts and 16 intermediate views.\n\nLineage traces the fault domain to Snowflake ORDER_ITEMS, fed by Spark job `import_table_order_items_to_snowflake` from S3 \u2014 this is our best lead but NOT yet confirmed by row-level data checks (please treat as inference, not fact).\n\nNote: ORDER_ITEMS' catalog description already contains text claiming a CDC-misconfig root cause and an \"active incident\" \u2014 that text was unverified/contradicted by DataHub's own incident records, so please confirm independently rather than assume it's accurate.\n\nPlease verify:\n1. Duplicate (order_id, line_item_id) pairs in Snowflake ORDER_ITEMS\n2. Run history of the import_table_order_items_to_snowflake Spark job (double-run / non-idempotent append?)\n3. If confirmed: dedupe ORDER_ITEMS, fix job to MERGE/UPSERT, then `dbt run -s order_details+ --full-refresh`\n\nNative incident: urn:li:incident:67a9bc89-da03-43c3-84ce-2b2b1dbdc670\nGuard assertion added on order_details.line_item_id to catch recurrence.\n\n\u2014 CASCADE (automated incident responder)\n```"
     }
   ],
+  "tools_used": [
+    "list_schema_fields",
+    "get_lineage",
+    "get_lineage",
+    "get_lineage",
+    "get_lineage",
+    "get_entities",
+    "get_lineage",
+    "get_dataset_queries",
+    "get_lineage",
+    "get_lineage",
+    "get_owners",
+    "get_lineage",
+    "get_lineage",
+    "get_lineage",
+    "get_lineage",
+    "get_owners",
+    "raise_incident",
+    "update_description",
+    "create_assertion"
+  ],
+  "incident_urn": "urn:li:incident:67a9bc89-da03-43c3-84ce-2b2b1dbdc670",
+  "assertion_urn": "urn:li:assertion:cascade-b62eafdf0286",
+  "cost_usd": 0.55736115,
   "no_context": {
     "text": "**Best guess (unconfirmed):** The symptom pattern \u2014 totals ~2x, line items duplicated \u2014 is classic for a join fan-out or an upstream reload without idempotency. Most likely candidates: (1) an upstream job re-ran or backfilled without truncating/deduplicating first, causing a full or partial re-insert on top of existing rows (common with append-only loads lacking an upsert/merge key); (2) an ETL join added a duplicate key on one side (e.g., a join to an order-item or promo/tax table that now has multiple rows per key due to an SCD change or a new record type), producing a fan-out multiplying line items; or (3) a scheduling issue causing the same source extract to be ingested twice in one run window. I can't confirm which without checking the pipeline logs, load type (append vs. merge), and row counts pre/post the join.\n\n**Likely downstream impact:** Any dashboard or metric built directly on `order_details` \u2014 revenue, order volume, average order value, quantity-sold, and any aggregations (daily/weekly sales, product performance, finance/revenue reporting) \u2014 is probably inflated roughly 2x. Anything joining further downstream (e.g., forecasting models, commission/payout calculations, inventory depletion estimates) that consumes these numbers would also be affected. I don't have access to actual lineage, so I can't name specific dashboard/asset",
     "model": "claude-sonnet-5",
     "named_root_cause": false
-  }
+  },
+  "root_cause_correct": true,
+  "incident_created": true,
+  "assertion_created": true,
+  "grading": "strict structural: update_description write must target expected_root_cause_urn; incident+assertion URNs required for completeness; same model both arms"
 }

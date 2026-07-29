@@ -1,0 +1,10 @@
+# PROPOSED by CASCADE — requires human review before merge
+# Guard for: NULL spike (broken lookup)
+version: 2
+models:
+  - name: order_details
+    columns:
+      - name: billing_country
+        tests:
+          - not_null:
+              name: cascade_guard_order_details_billing_country_not_null

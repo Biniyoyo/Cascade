@@ -22,7 +22,7 @@ Give your best-effort diagnosis from the symptom alone:
 """
 
 
-def run_no_context(scenario: dict) -> dict:
+def run_no_context(scenario: dict, model: str = DEV_MODEL) -> dict:
     """One cheap, tool-less LLM call. Returns {text, model}."""
     from anthropic import Anthropic
 
@@ -32,9 +32,9 @@ def run_no_context(scenario: dict) -> dict:
               f"Without a data catalog or lineage, what's your best guess at the root "
               f"cause and the likely downstream impact?")
     msg = client.messages.create(
-        model=DEV_MODEL, max_tokens=450,
+        model=model, max_tokens=450,
         system=NO_CONTEXT_SYSTEM,
         messages=[{"role": "user", "content": prompt}],
     )
     text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
-    return {"text": text, "model": DEV_MODEL}
+    return {"text": text, "model": model}

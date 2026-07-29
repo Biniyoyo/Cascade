@@ -24,6 +24,6 @@
     "priority": "HIGH",
     "affected": "customers",
     "blast_total": 36,
-    "root_cause": "CUSTOMERS"
+    "root_cause": "upstream customers load"
   }
 ]

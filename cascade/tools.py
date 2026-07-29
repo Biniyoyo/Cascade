@@ -23,13 +23,16 @@ def reset_last():
     "Raise a REAL native DataHub incident on an asset. It appears on the asset's "
     "Incidents tab and drives DataHub health signals. Call this once you have "
     "confirmed the root cause, to formally open the incident. "
-    "priority is one of CRITICAL, HIGH, MEDIUM, LOW.",
-    {"resource_urn": str, "title": str, "description": str, "priority": str},
+    "priority is one of CRITICAL, HIGH, MEDIUM, LOW. assignee_urns (optional) "
+    "assigns the incident to the routed owners' corpuser/corpGroup URNs.",
+    {"resource_urn": str, "title": str, "description": str, "priority": str,
+     "assignee_urns": list},
 )
 async def raise_incident(args):
     urn = di.raise_incident(
         args["resource_urn"], args["title"], args["description"],
         priority=(args.get("priority") or "HIGH"),
+        assignee_urns=args.get("assignee_urns"),
     )
     LAST["incident"] = urn
     return {"content": [{"type": "text",
@@ -46,7 +49,8 @@ async def get_owners(args):
     owners = di.get_owners(args["resource_urn"])
     if not owners:
         return {"content": [{"type": "text", "text": "No owners found for this asset."}]}
-    lines = [f"- {o['name']} ({o['ownership_type']}, {o['kind']})" for o in owners]
+    lines = [f"- {o['name']} ({o['ownership_type']}, {o['kind']}) urn={o.get('urn','?')}"
+             for o in owners]
     return {"content": [{"type": "text", "text": "Owners:\n" + "\n".join(lines)}]}
 
 
