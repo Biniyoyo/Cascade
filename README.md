@@ -8,7 +8,9 @@
 
 > **CASCADE uses DataHub's Context Graph via the [MCP Server](https://github.com/acryldata/mcp-server-datahub) to read lineage, schema, and ownership — and writes back via DataHub's native Incidents API, plus a guard assertion and owner routing.** It is an AI agent that does real on-call work: when a data-quality check fails, CASCADE finds the root cause, maps the blast radius, raises a real incident, and proposes the fix — **autonomous investigation, propose-first write-back.**
 
-**[▶ Watch the 2:51 demo](https://youtu.be/AlMSw3hTYGs)** · **Track:** Agents That Do Real Work · **License:** Apache-2.0
+**[▶ Watch the 2:51 demo](https://youtu.be/AlMSw3hTYGs)** · **[🖥 Try the war room](https://biniyoyo.github.io/Cascade/)** · **Track:** Agents That Do Real Work · **License:** Apache-2.0
+
+*The hosted war room replays the recorded investigations — step-by-step reasoning, lineage, blast radius, the generated report — with no setup. Live runs against a real DataHub are local-only (they need your DataHub + an API key); rebuild the static site with `python scripts/build_static.py`.*
 
 ![CASCADE live demo](docs/media/live-demo.gif)
 
