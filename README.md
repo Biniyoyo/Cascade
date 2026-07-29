@@ -115,6 +115,24 @@ python run_eval.py                   # all 3 scenarios; refreshes the cached tra
 ```
 </details>
 
+### Point it at your own DataHub
+
+Nothing above is specific to the demo graph. CASCADE takes any dataset URN your
+DataHub knows about, on any platform, plus the symptom in plain English:
+
+```bash
+python run_incident.py \
+  --urn 'urn:li:dataset:(urn:li:dataPlatform:snowflake,PROD_DB.sales.orders,PROD)' \
+  --symptom 'freshness check failed — no rows loaded since 03:00 UTC' \
+  --priority critical --propose
+```
+
+`--propose` is the way to meet a new catalog: CASCADE reads your real lineage,
+schema and ownership, then prints the exact writes it *would* make without
+executing any of them. Point it at production and read the diff before you ever
+give it a write token. Config is the same `DATAHUB_GMS_URL` / `DATAHUB_GMS_TOKEN`
+the DataHub MCP Server already uses.
+
 ![War room](docs/media/war-room.png)
 
 ## Reliability — and exactly how it's graded
