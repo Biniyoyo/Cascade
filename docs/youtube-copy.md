@@ -15,8 +15,14 @@ repair (dbt test + patch proposal, human-approval gated).
 
 Measured, not asserted: the same model, with vs without DataHub's graph,
 strictly graded on the root-cause URN the agent annotates —
-18/18 correct with DataHub vs 0/18 without, across two model tiers, at a
-measured $0.11 per investigation. Methodology and every raw trace are in the repo.
+10/10 correct with DataHub vs 0/10 without, across two model tiers, at a
+measured $0.11 per investigation.
+
+We also audited our own eval and published the auditor. A bug in the graph-reset
+script left a previous run's annotation on the root-cause asset in 8 of 18 runs;
+all 18 passed, but those 8 were told the answer, so they're excluded from the
+number above rather than quietly re-run. Check any trace yourself with
+scripts/audit_contamination.py. Methodology and every raw trace are in the repo.
 
 ▶ Try the war room (no setup): https://biniyoyo.github.io/Cascade/
 ▶ Code (Apache-2.0): https://github.com/Biniyoyo/Cascade
