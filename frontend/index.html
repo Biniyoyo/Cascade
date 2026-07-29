@@ -243,7 +243,7 @@ async function loadScenario(id){
     </div>
     ${d.no_context?`<div class="ab">
       <div class="ab-h">The proof: <span class="grad2">context, not model</span> — same LLM, with vs without DataHub</div>
-      <div class="ab-h" style="font-size:.85em;opacity:.75;margin-top:4px">Measured across 18 runs at two model tiers: <b>0/18</b> root causes without DataHub vs <b>18/18</b> with — same model in both arms, graded on the root-cause table the agent annotates, not on wording. Full protocol: docs/eval.md.</div>
+      <div class="ab-h" style="font-size:.85em;opacity:.75;margin-top:4px">Measured at two model tiers, same model in both arms, graded on the root-cause table the agent annotates rather than on wording: <b>0/10</b> without DataHub vs <b>10/10</b> with, across the runs we can verify were hint-free. (All 18 runs passed; a reset bug left a prior run's annotation on the answer asset in 8 of them, so those are published but excluded — see docs/eval.md and scripts/audit_contamination.py.)</div>
       <div class="ab-cols">
         <div class="ab-col no">
           <div class="ab-t">🔒 WITHOUT DataHub · symptom only</div>
