@@ -13,10 +13,12 @@ likely root cause, maps the downstream blast radius, files a native DataHub
 incident, registers a guard assertion, routes the owners — and proposes the
 repair (dbt test + patch proposal, human-approval gated).
 
-Measured, not asserted: same model with vs without DataHub's graph, strictly
-graded on the root-cause URN the agent annotates — results, methodology, and
-raw traces in the repo.
+Measured, not asserted: the same model, with vs without DataHub's graph,
+strictly graded on the root-cause URN the agent annotates —
+18/18 correct with DataHub vs 0/18 without, across two model tiers, at a
+measured $0.11 per investigation. Methodology and every raw trace are in the repo.
 
+▶ Try the war room (no setup): https://biniyoyo.github.io/Cascade/
 ▶ Code (Apache-2.0): https://github.com/Biniyoyo/Cascade
 ▶ Upstream contributions:
    https://github.com/acryldata/mcp-server-datahub/pull/147
@@ -25,12 +27,16 @@ raw traces in the repo.
 
 Chapters
 0:00 A column breaks at 2 a.m.
-0:20 Real DataHub receipts — incident, assertion, lineage
-0:35 How CASCADE works
-1:00 Live investigation (no human in the loop)
-1:30 The A/B: same model, with vs without DataHub
-2:00 Write-back, owners, repair proposal
-2:30 Evidence & open source
+0:23 What CASCADE does
+0:59 The incident war room
+1:12 Live investigation — no human in the loop
+1:31 Without DataHub, the same model only guesses
+1:37 With DataHub's graph, it knows
+1:47 Blast radius: 35 downstream assets
+1:55 Write-back: incident, guard, annotation
+2:10 Routed to the owners
+2:22 A context problem, not a model problem
+2:28 Proof in numbers, and contributed upstream
 
 Music: "Deliberate Thought" & "Inspired" — Kevin MacLeod (incompetech.com),
 licensed under Creative Commons: By Attribution 4.0
