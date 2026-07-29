@@ -203,9 +203,9 @@ let CONFIG={live_enabled:false};
 const PRIO_ICON={CRITICAL:'🔴',HIGH:'🟠',MEDIUM:'🔵'};
 
 async function boot(){
-  CONFIG=await (await fetch('/api/config')).json();
+  CONFIG=await (await fetch('api/config.json')).json();
   if(CONFIG.live_enabled){$('#livePill').innerHTML='<span class="dot"></span> live runs available';}
-  const list=await (await fetch('/api/scenarios')).json();
+  const list=await (await fetch('api/scenarios.json')).json();
   const wrap=$('#cards'); let totalBlast=0;
   list.forEach(s=>{
     totalBlast+=s.blast_total;
@@ -226,7 +226,7 @@ async function boot(){
 
 let CURRENT=null;
 async function loadScenario(id){
-  const d=await (await fetch('/api/scenarios/'+id)).json();
+  const d=await (await fetch('api/scenarios/'+id+'.json')).json();
   CURRENT=d;
   const room=$('#room'); room.style.display='block';
   const b=d.blast.counts;
