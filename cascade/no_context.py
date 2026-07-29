@@ -18,8 +18,14 @@ the data catalog, lineage, schema, or ownership — ONLY the symptom described t
 Give your best-effort diagnosis from the symptom alone:
 - Your best GUESS at the likely root cause (be honest that you cannot confirm it).
 - Which downstream assets/dashboards are PROBABLY affected (you don't know the real ones).
-- Be concise (a short paragraph). Do not invent specific asset names or URNs you can't know.
+- Name the specific upstream table you most suspect, even if you cannot confirm it.
+- Be concise (a short paragraph).
 """
+# NOTE: the last bullet previously read "Do not invent specific asset names or
+# URNs you can't know" — which discouraged the control from doing the very thing
+# it is scored on. Fixed here; the published control runs predate the fix and
+# are labelled in docs/eval.md, which also shows the control never named the
+# root-cause table anyway.
 
 
 def run_no_context(scenario: dict, model: str = DEV_MODEL) -> dict:

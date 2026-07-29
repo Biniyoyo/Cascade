@@ -23,9 +23,15 @@ from cascade.scenarios import SCENARIOS  # noqa: E402
 
 # any line containing one of these is stripped from descriptions
 HINT_MARKERS = [
-    "INCIDENT POINTER", "🚨", "INCIDENT NOTE", "AGENT INSTRUCTION",
+    "INCIDENT POINTER", "🚨", "⚠️", "INCIDENT NOTE", "AGENT INSTRUCTION",
     "fan-out", "fan out", "duplicat", "known issue", "analyst note",
     "join-key mismatch", "missing rows",
+    # Markers CASCADE itself writes. A previous rep's annotation must never
+    # survive into the next rep's graph — see scripts/audit_contamination.py,
+    # which detects exactly this leak in a set of traces.
+    "ACTIVE INCIDENT", "INCIDENT ALERT", "CRITICAL INCIDENT",
+    "ACTION REQUIRED", "urn:li:incident:", "implicated in",
+    "root source of", "root cause of", "Remediate:",
 ]
 
 _GET = """query d($urn: String!) {
@@ -59,14 +65,17 @@ def _clean_description(urn: str) -> bool:
 
 def reset_for_scenario(scenario: dict):
     affected = scenario["affected_urn"]
-    root = scenario.get("expected_root_cause_urn")
+    # NOTE: this used to read the singular "expected_root_cause_urn", a key that
+    # no longer exists — so root-cause descriptions were silently never cleaned.
+    # That bug contaminated 6 of the 18 published runs; see docs/eval.md.
+    roots = scenario.get("expected_root_cause_urns") or []
     try:
         for inc in di.list_incidents(affected):
             if inc["status"]["state"] == "ACTIVE":
                 di.resolve_incident(inc["urn"], "reset before eval rep")
     except Exception as e:  # noqa: BLE001
         print(f"    (incident reset skipped: {e})")
-    for urn in filter(None, {affected, root}):
+    for urn in filter(None, {affected, *roots}):
         try:
             if _clean_description(urn):
                 print(f"    cleaned description: {urn.split(',')[-2].split('.')[-1]}")

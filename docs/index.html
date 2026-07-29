@@ -293,14 +293,14 @@ async function loadScenario(id){
 }
 
 /* ---- reasoning replay ---- */
-const WRITE_TOOLS=['raise_incident','update_description','add_tags'];
+const WRITE_TOOLS=['raise_incident','update_description','create_assertion'];
 // Hide internal plumbing so judges see CASCADE working the DataHub graph.
 const HIDE_TOOLS=new Set(['ToolSearch','Read','Bash','Grep','Glob','Write','Edit','TodoWrite','WebFetch']);
 const NICE={list_schema_fields:'reading schema',get_lineage:'tracing lineage',
   get_lineage_paths_between:'tracing column path',get_owners:'finding owners',
   get_entities:'reading metadata',get_dataset_queries:'checking consumers',
   search:'searching graph',raise_incident:'raising native incident',
-  update_description:'annotating asset'};
+  update_description:'annotating asset',create_assertion:'registering guard assertion'};
 async function replay(steps,live){
   const tl=$('#timeline'); tl.innerHTML=''; const status=$('#tstatus');
   for(let i=0;i<steps.length;i++){

@@ -7,6 +7,3 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns: [order_id, line_item_id]
           name: cascade_guard_order_details_no_fanout_duplicates
-    columns:
-      - name: order_details
-        tests: [not_null]

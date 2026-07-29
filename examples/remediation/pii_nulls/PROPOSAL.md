@@ -6,13 +6,13 @@
 ## What broke (evidence-backed likely cause)
 
 - Affected: `urn:li:dataset:(urn:li:dataPlatform:dbt,b2fd91.order_entry_db.order_entry.customers,PROD)` (column `cust_email`)
-- Likely root cause asset (from column-level lineage): `n/a`
+- Likely root cause asset (from column-level lineage): `urn:li:dataset:(urn:li:dataPlatform:postgres,b2fd91.order_entry_db.order_entry.customers,PROD)`
 - Native incident: `urn:li:incident:88abc00a-7545-4e40-9821-b661944e1d89`
 - Guard assertion (DataHub): `urn:li:assertion:cascade-47c09241c620`
 
 ## Proposed repair steps (for the owner to verify & apply)
 
-1. Verify the upstream load for `unknown`: row counts vs previous run, join-key
+1. Verify the upstream load for `customers`: row counts vs previous run, join-key
    integrity, and the load job's run logs.
 2. Apply the dbt schema test in `schema_test_customers.yml` to the model's
    `.yml` so the failure mode is caught at build time — in addition to the DataHub

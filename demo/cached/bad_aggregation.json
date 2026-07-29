@@ -322,6 +322,6 @@
   "root_cause_correct": true,
   "incident_created": true,
   "assertion_created": true,
-  "grading": "strict structural: update_description write must target expected_root_cause_urn; incident+assertion URNs required for completeness; same model both arms",
+  "grading": "structural: update_description entity_urn == expected_root_cause_urn; single run per scenario",
   "canonical_note": "showcase replay = claude-sonnet-5 rep 1/1; the 5-rep claude-haiku-4-5 tier and all raw runs are in demo/cached/runs/ \u2014 aggregate results in docs/eval.md"
 }

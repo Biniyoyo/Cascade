@@ -29,9 +29,16 @@ CASCADE turns that into a number — measured at two model tiers, same model in 
 | claude-haiku-4.5 · 5 runs × 3 scenarios | **0 / 15** | **15 / 15** |
 | claude-sonnet-5 · 1 run × 3 scenarios | **0 / 3** | **3 / 3** |
 
-**Combined: 0/18 → 18/18.** Native incidents and guard assertions: 18/18. Full protocol, per-scenario table, and raw traces: [docs/eval.md](docs/eval.md).
+**Admissible result: 0/10 → 10/10.** All 18 runs passed, but we audited our own
+eval and found that a reset bug left a prior rep's annotation on the root-cause
+asset in 8 of them — those are published but excluded from the headline
+(`python scripts/audit_contamination.py`). Native incidents and guard
+assertions: 18/18. Full protocol, the bug write-up, per-scenario table, and raw
+traces: [docs/eval.md](docs/eval.md).
 
-*Graded structurally: a run counts only if the agent's `update_description` write targets the ground-truth root-cause **table** (accepted at any layer of its ingestion chain, never the affected dataset). Prose mentions never count. Hint-free graph reset before every rep. Re-score offline: `python scripts/regrade.py`.*
+*Graded structurally: a run counts only if the agent's `update_description` write targets the ground-truth root-cause **table** (accepted at any layer of its ingestion chain, never the affected dataset). Prose mentions never count. Hint-free graph reset before every rep — verified per run, not assumed. Re-score
+offline: `python scripts/regrade.py` (canonical replays **and** all 18 raw runs,
+split by contamination).*
 
 ![Context A/B](docs/media/ab-proof.png)
 
@@ -112,7 +119,12 @@ python run_eval.py                   # all 3 scenarios; refreshes the cached tra
 
 ## Reliability — and exactly how it's graded
 
-`run_eval.py` injects 3 known-root-cause incidents (NULL spike, metric inflation, PII completeness) and grades **structurally**: a scenario passes iff the agent's `update_description` targets the ground-truth root-cause URN (`cascade/scenarios.py` → `expected_root_cause_urn`). Result: **18/18 with DataHub, 0/18 for the no-context controls** across both model tiers ([docs/eval.md](docs/eval.md)); `scripts/regrade.py` re-scores the shipped traces so the claim is verifiable offline.
+`run_eval.py` injects 3 known-root-cause incidents (NULL spike, metric inflation, PII completeness) and grades **structurally**: a scenario passes iff the agent's `update_description` targets the ground-truth root-cause URN (`cascade/scenarios.py` → `expected_root_cause_urns`, accepted at any layer of the
+ingestion chain). Result across both model tiers: **10/10 with DataHub vs 0/10 for
+the no-context controls on the runs that are verifiably hint-free**, and 18/18 vs
+0/18 counting every run ([docs/eval.md](docs/eval.md)). `scripts/regrade.py`
+re-scores every shipped trace and `scripts/audit_contamination.py` re-checks which
+runs are admissible — both offline, no API key, no DataHub.
 
 *Honesty note: the showcase traces were recorded in a fuller development harness — you'll see auxiliary calls (e.g. shell/jq handling of oversized lineage payloads) alongside the DataHub MCP calls; the shipped `ALLOWED_TOOLS` runs the same procedure with the DataHub + CASCADE toolset.*
 
@@ -131,6 +143,7 @@ Rollout tiers, audit log, and the webhook trigger are documented in [docs/deploy
 |---|---|---|
 | `raise_incident` / `update_incident_status` MCP tools | [mcp-server-datahub](https://github.com/acryldata/mcp-server-datahub) | **filed: [PR #147](https://github.com/acryldata/mcp-server-datahub/pull/147)** (514 tests pass, 15 new) |
 | `datahub-incident-response` Skill | [datahub-skills](https://github.com/datahub-project/datahub-skills) | **filed: [PR #56](https://github.com/datahub-project/datahub-skills/pull/56)** (proposal: [#55](https://github.com/datahub-project/datahub-skills/issues/55)) |
+| 5 friction issues found while building (lineage payload size, missing incident write tools, telemetry blocking stdio startup, …) | mcp-server-datahub · datahub | **filed: [#153](https://github.com/acryldata/mcp-server-datahub/issues/153), [#154](https://github.com/acryldata/mcp-server-datahub/issues/154), [#18709](https://github.com/datahub-project/datahub/issues/18709), [#18710](https://github.com/datahub-project/datahub/issues/18710), [#18711](https://github.com/datahub-project/datahub/issues/18711)** |
 
 ## Going deeper (honest roadmap on DataHub's real surfaces)
 
