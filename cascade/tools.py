@@ -12,10 +12,27 @@ from cascade import datahub_incidents as di
 # process), so the runner captures the exact URNs — no fragile text parsing.
 LAST = {"incident": None, "assertion": None}
 
+MAX_AUTO_ASSIGNEES = 5
+
 
 def reset_last():
     LAST["incident"] = None
     LAST["assertion"] = None
+
+
+def _owner_urns(resource_urn: str) -> list[str]:
+    """Assignable owner URNs from DataHub's ownership graph, most-accountable
+    first (technical owner / steward before generic business owner)."""
+    rank = {"TECHNICAL_OWNER": 0, "DATA_STEWARD": 1, "BUSINESS_OWNER": 2}
+    owners = [o for o in di.get_owners(resource_urn)
+              if (o.get("urn") or "").startswith("urn:li:corp")]
+    owners.sort(key=lambda o: rank.get(o.get("ownership_type", ""), 3))
+    seen, urns = set(), []
+    for o in owners:
+        if o["urn"] not in seen:
+            seen.add(o["urn"])
+            urns.append(o["urn"])
+    return urns[:MAX_AUTO_ASSIGNEES]
 
 
 @tool(
@@ -29,14 +46,28 @@ def reset_last():
      "assignee_urns": list},
 )
 async def raise_incident(args):
+    # Routing is a property of the graph, not of the model remembering to ask
+    # for it: when the agent doesn't name assignees, fall back to the asset's
+    # own owners so every incident lands on a real person or team.
+    assignees = [u for u in (args.get("assignee_urns") or [])
+                 if isinstance(u, str) and u.startswith("urn:li:corp")]
+    auto_routed = False
+    if not assignees:
+        assignees = _owner_urns(args["resource_urn"])
+        auto_routed = bool(assignees)
+
     urn = di.raise_incident(
         args["resource_urn"], args["title"], args["description"],
         priority=(args.get("priority") or "HIGH"),
-        assignee_urns=args.get("assignee_urns"),
+        assignee_urns=assignees or None,
     )
     LAST["incident"] = urn
+    routed = (f" Assigned to {len(assignees)} owner(s) from DataHub's ownership graph"
+              f"{' (auto-routed)' if auto_routed else ''}: {', '.join(assignees)}."
+              if assignees else " No owners found on the asset — incident is unassigned.")
     return {"content": [{"type": "text",
-                         "text": f"Raised native DataHub incident {urn} on {args['resource_urn']}"}]}
+                         "text": f"Raised native DataHub incident {urn} on "
+                                 f"{args['resource_urn']}.{routed}"}]}
 
 
 @tool(

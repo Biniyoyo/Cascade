@@ -40,7 +40,7 @@ CASCADE turns that into a number — measured at two model tiers, same model in 
 1. **Triage** — reads the failing dataset's schema (`list_schema_fields`) to locate the affected column.
 2. **Root cause** — traces upstream **column-level lineage** (`get_lineage`) to the **evidence-backed likely root cause** — verified facts and inference kept explicitly separate in the report.
 3. **Blast radius** — traces downstream (`get_lineage`) to enumerate every impacted dashboard, chart, and dataset.
-4. **Route** — reads ownership (`get_owners`) to route the incident to the responsible team/person.
+4. **Route** — reads ownership (`get_owners`) and **assigns the incident** to the responsible team/person. Routing is a property of the graph, not of the model remembering to ask for it: if the agent doesn't name assignees, `raise_incident` falls back to the asset's own owners (technical owner → steward → business owner), so every incident lands on someone real (`tests/test_tools_routing.py`).
 5. **Write back** — raises a **native DataHub incident**, annotates the root-cause asset, and registers a **native guard assertion** for your assertion runner to evaluate (registration is what CASCADE does today; native run-evaluation wiring is roadmap).
 6. **Alert** — drafts a ready-to-send owner notification with root cause, blast radius, and the fix.
 7. **Propose repair** — generates a reviewable remediation artifact: a **dbt schema test + patch proposal** tied to the root-cause lineage and routed owner, human-approval gated (`scripts/propose_fix.py` → `examples/remediation/`). Nothing is auto-applied.
